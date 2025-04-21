@@ -1,6 +1,7 @@
 'use client';
 
 import { Box, TextField, Typography } from '@mui/material';
+import Link from 'next/link';
 import { useState } from 'react';
 
 export default function Home() {
@@ -34,6 +35,9 @@ export default function Home() {
                 placeholder="あなたの名前は？"
                 onChange={(e) => setName(e.target.value)}
             ></TextField>
+            <Link href={'/graph'}>
+                <Typography>チャートを開く</Typography>
+            </Link>
         </Box>
     );
 }
