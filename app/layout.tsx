@@ -19,10 +19,15 @@ export default function RootLayout({
                 style={{
                     margin: 0,
                     padding: 0,
+                    color: '#fff',
+                    backgroundColor: '#000',
                     width: '100vw',
                     minHeight: '100svh',
                 }}
             >
+                <div id="header">
+                    <h1>Header</h1>
+                </div>
                 <AppRouterCacheProvider>
                     <CssBaseline />
                     <ThemeProvider theme={theme}>{children}</ThemeProvider>
