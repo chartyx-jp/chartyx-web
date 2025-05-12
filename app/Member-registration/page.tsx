@@ -1,3 +1,4 @@
+// メールアドレス入力画面
 'use client';
 
 import { Box, Button, Typography } from '@mui/material';
@@ -41,7 +42,7 @@ export default function Home() {
             onSubmit={(e) => {
                 e.preventDefault(); // フォームのデフォルトの送信を防ぐ
                 if (!errorMessage) {
-                    router.push('/graph');
+                    router.push('/Member-registration/plans');
                 }
             }}
         >
