@@ -25,9 +25,6 @@ export default function RootLayout({
                     minHeight: '100svh',
                 }}
             >
-                <div id="header">
-                    <h1>Header</h1>
-                </div>
                 <AppRouterCacheProvider>
                     <CssBaseline />
                     <ThemeProvider theme={theme}>{children}</ThemeProvider>

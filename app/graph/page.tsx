@@ -1,12 +1,18 @@
 'use client';
 
+import { Box } from '@mui/material';
 import { CandlestickSeries, createChart, LineSeries } from 'lightweight-charts';
 import { useEffect, useRef } from 'react';
 
 export default function Home() {
+    const lineChartRef = useRef<HTMLDivElement>(null);
+    const candleChartRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
+        if (!lineChartRef.current || !candleChartRef.current) return;
+        // chartContainerRef.currentはnullの可能性があるので、nullチェックを行う
+
         // lineChart
-        const chart = createChart(document.getElementById('line-chart') as HTMLElement, { width: 400, height: 300, 
+        const chart = createChart(document.getElementById('line-chart') as HTMLElement, { width: 800, height: 300, 
             layout: {
                 background: {
                     color: '#000000',
@@ -50,22 +56,62 @@ export default function Home() {
     
         // リサイズ対応
         const handleResize = () => {
-            chart.applyOptions({
-                width: chartContainerRef.current.clientWidth,
-            });
+            if (lineChartRef.current) {
+                chart.applyOptions({
+                width: lineChartRef.current.clientWidth,
+                });
+            }
+            if (candleChartRef.current) {
+                chartB.applyOptions({
+                width: candleChartRef.current.clientWidth,
+                });
+            }
         };
         window.addEventListener('resize', handleResize);
     
         
         return () => {
+            window.removeEventListener('resize', handleResize);
             chart.removeSeries(lineSeries);
             chart.remove();
+            chartB.removeSeries(candleSeries);
+            chartB.remove();
         };
-    }, []);
+    },[]);
     return (
         <>
-            <div id="line-chart"></div>
-            <div id ="candle-chart"></div>
+            <Box
+                sx={{
+                    display: 'flex',
+                    width: '100vw',
+                    height: '100svh',
+                    backgroundColor: '#000',
+                }}
+            >
+
+                <Box
+                    sx={{
+                        display: 'block',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: '40vw',
+                        height: '100svh',
+                        backgroundColor: '#000',
+                    }}
+                ></Box>
+
+                <Box>
+                    <div id="line-chart" 
+                        ref={lineChartRef}
+                        style={{width: '60%', height: '300'}}>
+                    </div>
+                    <div id ="candle-chart"
+                        ref={candleChartRef}
+                        style={{width: '60%', height: '300'}}
+                    ></div>
+                </Box>
+            </Box>
         </>
     );
 }

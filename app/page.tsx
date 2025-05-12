@@ -1,11 +1,12 @@
 'use client';
 
-import { Box, TextField, Typography } from '@mui/material';
+import { Box, TextField, Typography, TypographyClasses } from '@mui/material';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
+
 
 export default function Home() {
-    const [name, setName] = useState('');
     return (
         <Box
             sx={{
@@ -15,29 +16,67 @@ export default function Home() {
                 alignItems: 'center',
                 width: '100vw',
                 height: '100svh',
-                backgroundColor: '#f0f0f0',
+                backgroundColor: '#000',
             }}
         >
-            <Typography
-                variant="h5"
-                sx={{
-                    fontWeight: 'bold',
+            {/* チャートページへのボタン */}
+            <button
+                style={{ 
+                    background: 'none', 
+                    border: 'solid 1px #fff', 
+                    cursor: 'pointer',
+                    margin: '20px',
                 }}
             >
-                {name || '名無し'}さん、こんにちは！
-            </Typography>
-            <TextField
-                sx={{
-                    width: '300px',
-                    mt: 2,
+                <Link href='/graph'
+                    style={{
+                        textDecoration: 'none',
+                    }}
+                >
+                    <Typography
+                        sx={{
+                            fontWeight: 'bold',
+                            color: 'white',
+                            '&:hover': {
+                                color: '#00ff00', // ホバー時の色
+                            }
+                        }}
+                    >
+                        チャート
+                    </Typography>
+                </Link>
+            </button>
+
+
+            {/* メンバー登録ページへのボタン */}
+            <button
+                style={{ 
+                    background: 'none', 
+                    border: 'solid 1px #fff', 
+                    cursor: 'pointer',
+                    margin: '20px',
                 }}
-                label="名前"
-                placeholder="あなたの名前は？"
-                onChange={(e) => setName(e.target.value)}
-            ></TextField>
-            <Link href={'/graph'}>
-                <Typography>チャートを開く</Typography>
-            </Link>
+            >
+                <Link href='/Member-registration'
+                    style={{
+                        textDecoration: 'none',
+                    }}
+                >
+                    <Typography
+                        sx={{
+                            fontWeight: 'bold',
+                            color: 'white',
+                            '&:hover': {
+                                color: '#00ff00', // ホバー時の色
+                            }
+                        }}
+                    >
+                        メンバー登録
+                    </Typography>
+                </Link>
+            </button>
+
+
         </Box>
     );
 }
