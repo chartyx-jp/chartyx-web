@@ -1,42 +1,30 @@
 'use client';
 
-import { Box, TextField, Typography, Button, TypographyClasses } from '@mui/material';
-import Link from 'next/link';
+import { Box, Button, Typography } from '@mui/material';
 import { useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from 'react';
 
 import CustomTextField from '../Member-registration/userInfoInputs';
-import { error } from 'console';
-
 
 export default function Home() {
-    const [userAddress, setAddress] = useState('');
-    let [errorMessage, setErrorMessage] = useState('メールアドレスを入力してください');
-    const [clicked, setClicked] = useState(false);
-    useEffect(() => {
-    })
+    const [address, setAddress] = useState('');
+    const [errorMessage, setErrorMessage] = useState('メールアドレスを入力してください');
+
     const router = useRouter();
 
-    const isAddress = () => {
-        if(userAddress == '') {
+    const validateEmail = (value: string) => {
+        if (value == '') {
             console.log('メールアドレスが入力されていません');
             setErrorMessage('メールアドレスが入力されていません');
-            setClicked(true); // クリックされたらtrueにする
-            return
+        } else if (!value.match(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)) {
+            console.log('メールアドレスの形式が正しくありません');
+            setErrorMessage('メールアドレスの形式が正しくありません');
         } else {
-        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-            if (!emailRegex.test(userAddress)) {
-                console.log('メールアドレスの形式が正しくありません');
-                setErrorMessage('メールアドレスの形式が正しくありません');
-                setClicked(true); // クリックされたらtrueにする
-                return
-            }
+            setErrorMessage(''); // エラーメッセージをクリア
         }
-        setErrorMessage(''); // エラーメッセージをクリア
-    }
+    };
+
+    const handleSubmit = () => {};
 
     return (
         <Box
@@ -49,25 +37,14 @@ export default function Home() {
                 height: '100svh',
                 backgroundColor: '#000',
             }}
-            component={"form"}
-            onSubmit = {(e) => {
+            component={'form'}
+            onSubmit={(e) => {
                 e.preventDefault(); // フォームのデフォルトの送信を防ぐ
-                if (errorMessage == '') {
+                if (!errorMessage) {
                     router.push('/graph');
                 }
             }}
         >
-            {/*　○○さんこんにちは */}
-            {/* <Typography
-                variant="h5"
-                sx={{
-                    fontWeight: 'bold',
-                    color: 'white',
-                }}
-            >
-                {name || '名無し'}さん、こんにちは！
-            </Typography> */}
-
             <Typography
                 sx={{
                     fontWeight: 'bold',
@@ -75,7 +52,7 @@ export default function Home() {
                     fontSize: '2rem',
                     marginBottom: '20px',
                 }}
-                >
+            >
                 アカウント作成
             </Typography>
 
@@ -84,14 +61,14 @@ export default function Home() {
                 label="e-mail"
                 placeholder=""
                 onChange={(e) => {
-                    setAddress(e.target.value)
-                    isAddress()
+                    setAddress(e.target.value);
+                    validateEmail(e.target.value);
                 }}
             />
 
-            <Typography id='alertMessage'
+            <Typography
+                id="alertMessage"
                 sx={{
-                    visibility: clicked ? 'visible' : 'hidden',
                     color: 'red',
                     height: '20px',
                     margin: '5px',
@@ -102,19 +79,15 @@ export default function Home() {
 
             {/* 会員登録画面へのボタン */}
             <Button
-                sx ={{
-                    color: 'white',
-                    backgroundColor: '#FF0000',
-                    '&:hover': {
-                        backgroundColor: '#FF0000',
-                    },
+                variant="contained"
+                sx={{
                     width: '200px',
                 }}
-                type='submit'
+                type="submit"
+                disabled={errorMessage !== ''}
             >
                 メンバー登録
             </Button>
-
         </Box>
     );
 }
