@@ -21,11 +21,26 @@ export default function plans() {
             <Box
                 sx={{
                     display: 'flex',
+                    position: 'relative',
                     width: '100%',
                     height: '80px',
-                    borderBottom: 'solid 1px #fff',
                 }}
             >
+                <Typography
+                    sx={{
+                        width: '120px',
+                        height: '100%',
+                        position: 'absolute',
+                        top: '0',
+                        textAlign: 'center',
+                        lineHeight: '80px',
+                        font: 'sans-serif',
+                        color: 'white',
+                        fontSize: '1.5rem',
+                    }}
+                >
+                    Chartyx
+                </Typography>
                 <Typography
                     sx={{
                         fontWeight: 'bold',
@@ -36,19 +51,19 @@ export default function plans() {
                     component={'h1'}
                     textAlign={'center'}
                 >
-                    プラン一覧
+                    Plans
                 </Typography>
             </Box>
 
-{/* ボタンコンテナ */}
+{/* メインコンテナ */}
             <Box
                 sx={{
                     display: 'flex',
-                    width: '100%',
+                    width: '1200px',
                     height: '80%',
                     margin: '0 auto',
+                    justifyContent: 'space-between',
                     alignItems: 'center',
-                    border: 'solid 1px #fff',
                 }}>
 
 {/* フリープラン */}
@@ -56,35 +71,86 @@ export default function plans() {
                     sx={{
                         display: 'flex',
                         alignItems: 'center',
-                        width: '100%',
+                        width: 'auto',
                         height: '90%',
-                        marginLeft: '20%',
                     }}>
-                        <Link href=''
-                            style={{
-                                textDecoration: 'none',
-                                width: '100%',
+                        <Box
+                            sx={{
+                                width: '350px',
                                 height: '100%',
+                                color: 'white',
+                                display: 'flex',
+                                position: 'relative',
+                                border: 'solid 1px #ccc',
+                                borderRadius: '10px',
                             }}>
-                            <Box
-                                sx={{
-                                    width: '350px',
-                                    height: '100%',
-                                    color: 'white',
-                                    display: 'flex',
-                                    border: 'solid 1px #fff',
-                                    borderRadius: '10px',
-                                    $hover: {
-                                        backgroundColor: '#00ff00', // ホバー時の色
-                                    },
-                                }}>
-                                    <h2 style={{
-                                        margin: '0 auto',
+                                <Typography
+                                    sx={{
+                                        position: 'absolute',
+                                        top: '5%',
+                                        left: '10%',
+                                        fontWeight: 'bold',
+                                        fontFamily: 'sans-serif',
+                                        fontSize: '3.5rem',
+                                        color: 'white',
                                     }}>
-                                        FREE
-                                    </h2>
-                            </Box>
-                        </Link>
+                                    Free
+                                </Typography>
+                                <Typography
+                                    sx={{
+                                        position: 'absolute',
+                                        top: '10%',
+                                        left: '65%',
+                                        fontSize: '1.75rem',
+                                        color: 'white',
+                                    }}>
+                                    ￥0
+                                </Typography>
+                                <Typography
+                                    sx={{
+                                        position: 'absolute',
+                                        top: '11.5%',
+                                        left: '82.5%',
+                                        fontSize: '1.5rem',
+                                        color: '#ccc',
+                                    }}>
+                                    /月
+                                </Typography>
+                                <Link
+                                    sx={{
+                                        display: 'flex',
+                                        position: 'absolute',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        top: '20%',
+                                        left: '10%',
+                                        width: '30%',
+                                        height: '40px',
+                                        color: 'white',
+                                        textDecoration: 'none',
+                                        borderRadius: '30px',
+                                        border: 'solid 2px #66B290',
+                                    }}>
+                                    <Typography
+                                        sx={{
+                                            fontSize: '1rem',
+                                            color: 'white',
+                                        }}
+                                    >
+                                        現在のプラン
+                                    </Typography>
+                                </Link>
+                                <Typography
+                                    sx={{
+                                        position: 'absolute',
+                                        top: '30%',
+                                        left: '12.5%',
+                                        fontSize: '1.2rem',
+                                        color: 'white',
+                                    }}>
+                                    ※特典など
+                                </Typography>
+                        </Box>
                 </Box>
 
 {/* ノーマルプラン */}
@@ -92,34 +158,89 @@ export default function plans() {
                     sx={{
                         display: 'flex',
                         alignItems: 'center',
-                        width: '100%',
+                        width: 'auto',
                         height: '90%',
                     }}>
-                        <Link href=''
-                            style={{
-                                textDecoration: 'none',
-                                width: '100%',
+                        <Box
+                            sx={{
+                                width: '350px',
                                 height: '100%',
+                                color: 'white',
+                                display: 'flex',
+                                position: 'relative',
+                                border: 'solid 1px #ccc',
+                                borderRadius: '10px',
                             }}>
-                            <Box
-                                sx={{
-                                    width: '350px',
-                                    height: '100%',
-                                    color: 'white',
-                                    display: 'flex',
-                                    border: 'solid 1px #fff',
-                                    borderRadius: '10px',
-                                    $hover: {
-                                        backgroundColor: '#00ff00', // ホバー時の色
-                                    },
-                                }}>
-                                    <h2 style={{
-                                        margin: '0 auto',
+                                <Typography
+                                    sx={{
+                                        position: 'absolute',
+                                        top: '5%',
+                                        left: '10%',
+                                        fontWeight: 'bold',
+                                        fontFamily: 'sans-serif',
+                                        fontSize: '3.5rem',
+                                        color: 'white',
                                     }}>
-                                        NORMAL
-                                    </h2>
-                            </Box>
-                        </Link>
+                                    Base
+                                </Typography>
+                                <Typography
+                                    sx={{
+                                        position: 'absolute',
+                                        top: '10%',
+                                        left: '53%',
+                                        fontSize: '1.75rem',
+                                        color: 'white',
+                                    }}>
+                                    ￥1240
+                                </Typography>
+                                <Typography
+                                    sx={{
+                                        position: 'absolute',
+                                        top: '11.5%',
+                                        left: '82.5%',
+                                        fontSize: '1.5rem',
+                                        color: '#ccc',
+                                    }}>
+                                    /月
+                                </Typography>
+                                <Link href='#'
+                                    sx={{
+                                        display: 'flex',
+                                        position: 'absolute',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        top: '20%',
+                                        left: '10%',
+                                        width: '30%',
+                                        height: '40px',
+                                        color: 'white',
+                                        textDecoration: 'none',
+                                        backgroundColor: '#66B290',
+                                        borderRadius: '30px',
+                                    }}>
+                                    <Typography
+                                        sx={{
+                                            fontSize: '1rem',
+                                            color: 'white',
+                                            '&:hover': {
+                                                filter: 'brightness(0.8)',
+                                            },
+                                        }}
+                                    >
+                                        今すぐ始める
+                                    </Typography>
+                                </Link>
+                                <Typography
+                                    sx={{
+                                        position: 'absolute',
+                                        top: '30%',
+                                        left: '12.5%',
+                                        fontSize: '1.2rem',
+                                        color: 'white',
+                                    }}>
+                                    ※特典など
+                                </Typography>
+                        </Box>
                 </Box>
 
 {/* PROプラン */}
@@ -127,35 +248,89 @@ export default function plans() {
                     sx={{
                         display: 'flex',
                         alignItems: 'center',
-                        width: '100%',
+                        width: 'auto',
                         height: '90%',
-                        marginRight: '20%',
                     }}>
-                        <Link href=''
-                            style={{
-                                textDecoration: 'none',
-                                width: '100%',
+                        <Box
+                            sx={{
+                                width: '350px',
                                 height: '100%',
+                                color: 'white',
+                                display: 'flex',
+                                position: 'relative',
+                                border: 'solid 1px #ccc',
+                                borderRadius: '10px',
                             }}>
-                            <Box
-                                sx={{
-                                    width: '350px',
-                                    height: '100%',
-                                    color: 'white',
-                                    display: 'flex',
-                                    border: 'solid 1px #fff',
-                                    borderRadius: '10px',
-                                    $hover: {
-                                        backgroundColor: '#00ff00', // ホバー時の色
-                                    },
-                                }}>
-                                    <h2 style={{
-                                        margin: '0 auto',
+                                <Typography
+                                    sx={{
+                                        position: 'absolute',
+                                        top: '5%',
+                                        left: '10%',
+                                        fontWeight: 'bold',
+                                        fontFamily: 'sans-serif',
+                                        fontSize: '3.5rem',
+                                        color: 'white',
                                     }}>
-                                        PRO
-                                    </h2>
-                            </Box>
-                        </Link>
+                                    Pro
+                                </Typography>
+                                <Typography
+                                    sx={{
+                                        position: 'absolute',
+                                        top: '10%',
+                                        left: '53%',
+                                        fontSize: '1.75rem',
+                                        color: 'white',
+                                    }}>
+                                    ￥3250
+                                </Typography>
+                                <Typography
+                                    sx={{
+                                        position: 'absolute',
+                                        top: '11.5%',
+                                        left: '82.5%',
+                                        fontSize: '1.5rem',
+                                        color: '#ccc',
+                                    }}>
+                                    /月
+                                </Typography>
+                                <Link href='#'
+                                    sx={{
+                                        display: 'flex',
+                                        position: 'absolute',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        top: '20%',
+                                        left: '10%',
+                                        width: '30%',
+                                        height: '40px',
+                                        color: 'white',
+                                        textDecoration: 'none',
+                                        backgroundColor: '#66B290',
+                                        borderRadius: '30px',
+                                    }}>
+                                    <Typography
+                                        sx={{
+                                            fontSize: '1rem',
+                                            color: 'white',
+                                            '&:hover': {
+                                                filter: 'brightness(0.8)',
+                                            },
+                                        }}
+                                    >
+                                        今すぐ始める
+                                    </Typography>
+                                </Link>
+                                <Typography
+                                    sx={{
+                                        position: 'absolute',
+                                        top: '30%',
+                                        left: '12.5%',
+                                        fontSize: '1.2rem',
+                                        color: 'white',
+                                    }}>
+                                    ※特典など
+                                </Typography>
+                        </Box>
                 </Box>
             </Box>
 
@@ -167,7 +342,7 @@ export default function plans() {
                     justifyContent: 'center',
                     width: '100%',
                     height: '80px',
-                    borderTop: 'solid 1px #fff',
+                    borderTop: 'solid 1px #ccc',
                 }}>
                 footer
             </Box>
