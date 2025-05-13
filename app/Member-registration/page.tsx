@@ -1,6 +1,8 @@
 // メールアドレス入力画面
 'use client';
 
+import 'nprogress/nprogress.css';
+import NProgress from 'nprogress';
 import { Box, Button, Typography } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -25,7 +27,23 @@ export default function Home() {
         }
     };
 
-    const handleSubmit = () => {};
+    // const [data, setData] = useState(null)
+    // const [isLoading, setIsLoading] = useState(false)
+
+    // const fetchData = async () => {
+    //         setIsLoading(true);
+    // NProgress.start();
+    // try {
+    //     const response = await fetch('');
+    //     const result = await response.json();
+    //     setData(result);
+    // } catch (error) {
+    //     console.error('データの取得に失敗しました', error);
+    // } finally {
+    //     setIsLoading(false);
+    //     NProgress.done();
+    // }
+    // };
 
     return (
         <Box
@@ -85,10 +103,16 @@ export default function Home() {
                     width: '200px',
                 }}
                 type="submit"
-                disabled={errorMessage !== ''}
+                disabled={!!errorMessage} // エラーメッセージがある場合はボタンを無効化
+                // onClick={() => {
+                //     fetchData();
+                // }}
+                // disabled={isLoading}
             >
                 メンバー登録
             </Button>
+            {/* {isLoading && <div>Loading...</div>}  ローカルなローディング表示 
+            {data && <pre>{JSON.stringify(data, null, 2)}</pre>} */}
         </Box>
     );
 }
