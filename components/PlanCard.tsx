@@ -28,6 +28,7 @@ export default function PlanCard({ name, price, active, description, onClick }: 
                 px: 2,
                 pt: 1,
                 pb: 2,
+                mx: 1,
                 display: 'flex',
                 flexDirection: 'column',
             }}
