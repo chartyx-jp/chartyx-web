@@ -1,4 +1,4 @@
-import { Box, Paper, Typography } from '@mui/material';
+import { Box, Button, Paper, Typography } from '@mui/material';
 import { JSX } from 'react';
 
 type props = {
@@ -6,19 +6,23 @@ type props = {
     price: number;
     active: boolean;
     description: JSX.Element;
+    onClick?: () => void;
 };
 
-export default function PlanCard({ name, price, active, description }: props) {
+export default function PlanCard({ name, price, active, description, onClick }: props) {
     return (
         <Paper
             sx={{
-                height: '90%',
-                width: '350px',
+                height: '400px',
+                width: '300px',
                 backgroundColor: '#000',
                 border: 'solid 1px #ccc',
                 borderRadius: '10px',
-                px: 3,
-                py: 1,
+                p: 2,
+                pt: 1,
+                pb: 2,
+                display: 'flex',
+                flexDirection: 'column',
             }}
         >
             <Box
@@ -62,6 +66,9 @@ export default function PlanCard({ name, price, active, description }: props) {
                 <Box sx={{ height: '50px', my: 2 }}></Box>
             )}
             <Box>{description}</Box>
+            <Button sx={{ mb: 0, mt: 'auto' }} fullWidth variant="outlined" onClick={onClick}>
+                選択する
+            </Button>
         </Paper>
     );
 }

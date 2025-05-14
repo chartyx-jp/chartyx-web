@@ -9,57 +9,32 @@ export default function plans() {
         <Box
             sx={{
                 width: '100vw',
-                height: '100svh',
+                minHeight: 'calc(100svh - 80px)',
                 backgroundColor: '#000',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
             }}
         >
-            {/* ヘッダー */}
-            <Box
-                sx={{
-                    display: 'flex',
-                    position: 'relative',
-                    width: '100%',
-                    height: '80px',
-                }}
-            >
-                <Typography
-                    sx={{
-                        width: '120px',
-                        height: '100%',
-                        position: 'absolute',
-                        top: '0',
-                        textAlign: 'center',
-                        lineHeight: '80px',
-                        font: 'sans-serif',
-                        color: 'white',
-                        fontSize: '1.5rem',
-                    }}
-                >
-                    Chartyx
-                </Typography>
-                <Typography
-                    sx={{
-                        fontWeight: 'bold',
-                        color: 'white',
-                        fontSize: '2rem',
-                        margin: '0 auto',
-                    }}
-                    component={'h1'}
-                    textAlign={'center'}
-                >
-                    Plans
-                </Typography>
-            </Box>
-
             {/* メインコンテナ */}
             <Box
                 sx={{
                     display: 'flex',
-                    width: '1200px',
-                    height: '80%',
-                    margin: '0 auto',
+                    width: {
+                        xs: '90%',
+                        md: '60%',
+                    },
                     justifyContent: 'space-between',
                     alignItems: 'center',
+                    flexDirection: {
+                        xs: 'column',
+                        md: 'row',
+                    },
+                    mt: {
+                        xs: 2,
+                        md: 0,
+                    },
                 }}
             >
                 {/* フリープラン */}
@@ -68,20 +43,6 @@ export default function plans() {
                 <PlanCard name="Base" price={1240} active={false} description={<Typography>有料です</Typography>}></PlanCard>
                 {/* PROプラン */}
                 <PlanCard name="Pro" price={3250} active={false} description={<Typography>帰りたいです</Typography>}></PlanCard>
-            </Box>
-
-            {/* フッター */}
-            <Box
-                sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: '100%',
-                    height: '80px',
-                    borderTop: 'solid 1px #ccc',
-                }}
-            >
-                footer
             </Box>
         </Box>
     );

@@ -1,3 +1,5 @@
+import Footer from '@/components/Footer';
+import Header from '@/components/Header';
 import theme from '@/theme/theme';
 import { CssBaseline, ThemeProvider } from '@mui/material';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
@@ -19,7 +21,6 @@ export default function RootLayout({
                 style={{
                     margin: 0,
                     padding: 0,
-                    color: '#fff',
                     backgroundColor: '#000',
                     width: '100vw',
                     minHeight: '100svh',
@@ -27,7 +28,11 @@ export default function RootLayout({
             >
                 <AppRouterCacheProvider>
                     <CssBaseline />
-                    <ThemeProvider theme={theme}>{children}</ThemeProvider>
+                    <ThemeProvider theme={theme}>
+                        <Header></Header>
+                        {children}
+                        <Footer></Footer>
+                    </ThemeProvider>
                 </AppRouterCacheProvider>
             </body>
         </html>
