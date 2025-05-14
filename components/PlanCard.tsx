@@ -1,11 +1,18 @@
 import { Box, Button, Paper, Typography } from '@mui/material';
 import { JSX } from 'react';
 
+/*
+[props]
+コンポーネントに渡す引数のこと。
+これを指定すると、タグにプロパティの形で値を渡せる
+*/
+
 type props = {
     name: string;
     price: number;
     active: boolean;
     description: JSX.Element;
+    // TypeScriptの書き方として、引数につく?は「あってもなくてもいいよ」という意味(もしundefinedになっていても平気)
     onClick?: () => void;
 };
 
@@ -18,7 +25,7 @@ export default function PlanCard({ name, price, active, description, onClick }: 
                 backgroundColor: '#000',
                 border: 'solid 1px #ccc',
                 borderRadius: '10px',
-                p: 2,
+                px: 2,
                 pt: 1,
                 pb: 2,
                 display: 'flex',
