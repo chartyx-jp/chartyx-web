@@ -1,5 +1,5 @@
 'use client';
-import { TextField, TextFieldProps } from "@mui/material";
+import { TextField, TextFieldProps } from '@mui/material';
 
 export default function UserInfoInputs(props: TextFieldProps) {
     return (
@@ -19,13 +19,13 @@ export default function UserInfoInputs(props: TextFieldProps) {
                         borderColor: 'gray', // ホバー時の枠線の色
                     },
                     '&.Mui-focused fieldset': {
-                    borderColor: 'white', // フォーカス時の枠線の色
+                        borderColor: 'white', // フォーカス時の枠線の色
                     },
                 },
                 '& .MuiInputLabel-root': {
                     color: 'gray', // 通常時のラベル色
                     '&.Mui-focused': {
-                    color: 'white', // フォーカス時のラベル色
+                        color: 'white', // フォーカス時のラベル色
                     },
                 },
                 ...props.sx,

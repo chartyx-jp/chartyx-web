@@ -1,13 +1,10 @@
 // メールアドレス入力画面
 'use client';
 
-import 'nprogress/nprogress.css';
-import NProgress from 'nprogress';
+import CustomTextField from '@/components/userInfoInputs';
 import { Box, Button, Typography } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-
-import CustomTextField from '../Member-registration/userInfoInputs';
 
 export default function Home() {
     const [address, setAddress] = useState('');
@@ -27,24 +24,6 @@ export default function Home() {
         }
     };
 
-    // const [data, setData] = useState(null)
-    // const [isLoading, setIsLoading] = useState(false)
-
-    // const fetchData = async () => {
-    //         setIsLoading(true);
-    // NProgress.start();
-    // try {
-    //     const response = await fetch('');
-    //     const result = await response.json();
-    //     setData(result);
-    // } catch (error) {
-    //     console.error('データの取得に失敗しました', error);
-    // } finally {
-    //     setIsLoading(false);
-    //     NProgress.done();
-    // }
-    // };
-
     return (
         <Box
             sx={{
@@ -60,7 +39,7 @@ export default function Home() {
             onSubmit={(e) => {
                 e.preventDefault(); // フォームのデフォルトの送信を防ぐ
                 if (!errorMessage) {
-                    router.push('/Member-registration/plans');
+                    router.push('/register/plans');
                 }
             }}
         >

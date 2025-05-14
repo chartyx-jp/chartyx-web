@@ -1,10 +1,7 @@
 'use client';
 
-import { Box, TextField, Typography, TypographyClasses } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
-
 
 export default function Home() {
     return (
@@ -21,14 +18,15 @@ export default function Home() {
         >
             {/* チャートページへのボタン */}
             <button
-                style={{ 
-                    background: 'none', 
-                    border: 'solid 1px #fff', 
+                style={{
+                    background: 'none',
+                    border: 'solid 1px #fff',
                     cursor: 'pointer',
                     margin: '20px',
                 }}
             >
-                <Link href='/graph'
+                <Link
+                    href="/graph"
                     style={{
                         textDecoration: 'none',
                     }}
@@ -39,7 +37,7 @@ export default function Home() {
                             color: 'white',
                             '&:hover': {
                                 color: '#00ff00', // ホバー時の色
-                            }
+                            },
                         }}
                     >
                         チャート
@@ -47,17 +45,17 @@ export default function Home() {
                 </Link>
             </button>
 
-
             {/* メンバー登録ページへのボタン */}
             <button
-                style={{ 
-                    background: 'none', 
-                    border: 'solid 1px #fff', 
+                style={{
+                    background: 'none',
+                    border: 'solid 1px #fff',
                     cursor: 'pointer',
                     margin: '20px',
                 }}
             >
-                <Link href='/Member-registration'
+                <Link
+                    href="/register"
                     style={{
                         textDecoration: 'none',
                     }}
@@ -68,15 +66,13 @@ export default function Home() {
                             color: 'white',
                             '&:hover': {
                                 color: '#00ff00', // ホバー時の色
-                            }
+                            },
                         }}
                     >
                         メンバー登録
                     </Typography>
                 </Link>
             </button>
-
-
         </Box>
     );
 }

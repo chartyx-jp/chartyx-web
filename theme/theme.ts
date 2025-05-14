@@ -7,7 +7,7 @@ const theme = createTheme({
     },
     typography: {
         allVariants: {
-            color: '#222222',
+            color: '#ffffff',
         },
     },
 });

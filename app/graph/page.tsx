@@ -12,7 +12,9 @@ export default function Home() {
         // chartContainerRef.currentはnullの可能性があるので、nullチェックを行う
 
         // lineChart
-        const chart = createChart(document.getElementById('line-chart') as HTMLElement, { width: 800, height: 300, 
+        const chart = createChart(document.getElementById('line-chart') as HTMLElement, {
+            width: 800,
+            height: 300,
             layout: {
                 background: {
                     color: '#000000',
@@ -43,7 +45,6 @@ export default function Home() {
             { time: '2019-04-19', value: 8100.89 },
             { time: '2019-04-20', value: 7400.43 },
         ]);
-        
 
         // ダミーデータ（実際はAPIなどで取得してね）
         const candleSeries = chartB.addSeries(CandlestickSeries);
@@ -53,23 +54,22 @@ export default function Home() {
             { time: '2023-12-03', open: 110, high: 120, low: 100, close: 115 },
             { time: '2023-12-04', open: 115, high: 118, low: 110, close: 112 },
         ]);
-    
+
         // リサイズ対応
         const handleResize = () => {
             if (lineChartRef.current) {
                 chart.applyOptions({
-                width: lineChartRef.current.clientWidth,
+                    width: lineChartRef.current.clientWidth,
                 });
             }
             if (candleChartRef.current) {
                 chartB.applyOptions({
-                width: candleChartRef.current.clientWidth,
+                    width: candleChartRef.current.clientWidth,
                 });
             }
         };
         window.addEventListener('resize', handleResize);
-    
-        
+
         return () => {
             window.removeEventListener('resize', handleResize);
             chart.removeSeries(lineSeries);
@@ -77,7 +77,7 @@ export default function Home() {
             chartB.removeSeries(candleSeries);
             chartB.remove();
         };
-    },[]);
+    }, []);
     return (
         <>
             <Box
@@ -88,7 +88,6 @@ export default function Home() {
                     backgroundColor: '#000',
                 }}
             >
-
                 <Box
                     sx={{
                         display: 'block',
@@ -102,14 +101,8 @@ export default function Home() {
                 ></Box>
 
                 <Box>
-                    <div id="line-chart" 
-                        ref={lineChartRef}
-                        style={{width: '60%', height: '300'}}>
-                    </div>
-                    <div id ="candle-chart"
-                        ref={candleChartRef}
-                        style={{width: '60%', height: '300'}}
-                    ></div>
+                    <div id="line-chart" ref={lineChartRef} style={{ width: '60%', height: '300' }}></div>
+                    <div id="candle-chart" ref={candleChartRef} style={{ width: '60%', height: '300' }}></div>
                 </Box>
             </Box>
         </>
