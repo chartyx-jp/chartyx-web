@@ -24,6 +24,7 @@ export default function RootLayout({
                     backgroundColor: '#000',
                     width: '100vw',
                     minHeight: '100svh',
+                    overflowX: 'hidden',
                 }}
             >
                 <AppRouterCacheProvider>
