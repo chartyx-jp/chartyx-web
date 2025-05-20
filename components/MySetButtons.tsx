@@ -1,6 +1,5 @@
-import { Box, Button, Typography } from '@mui/material';
-import { use, useState } from 'react';
-import { JSX } from 'react';
+import { Button, Typography } from '@mui/material';
+import { useState } from 'react';
 
 
 type props = {
