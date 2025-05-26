@@ -8,10 +8,12 @@ import { useEffect, useRef } from 'react';
 // import HamburgerMenu from '@/components/HamburgerMenu';
 import MySetButtons from '@/components/MySetButtons';
 
+
 export default function Graph() {
     const chartRef = useRef<HTMLDivElement>(null);
+    const miniChartRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
-        if (!chartRef.current) return(console.log('chart is null'));
+        if (!chartRef.current || !miniChartRef.current) return(console.log('chart is null'));
         // chartContainerRef.currentはnullの可能性があるので、nullチェックを行う
         // lineChart
         const chart = createChart(chartRef.current, {
@@ -25,7 +27,10 @@ export default function Graph() {
             },
             grid: {
                 vertLines: {
-                    color: '#e0e0e0',
+                    color: '#333333',
+                },
+                horzLines: {
+                    color: '#333333',
                 },
             },
             localization: {
@@ -34,13 +39,37 @@ export default function Graph() {
             },
         });
 
+        // miniChart
+        const miniChart = createChart(miniChartRef.current, {
+            width: miniChartRef.current.clientWidth,
+            height: 150,
+            layout: {
+                background: {
+                    color: '#000000',
+                },
+                textColor: '#ffffff',
+            },
+            grid: {
+                vertLines: {
+                    color: '#333333',
+                },
+                horzLines: {
+                    color: '#333333',
+                },
+            },
+            localization: {
+                locale: 'ja-JP',
+                dateFormat: 'yyyy/MM/dd',
+            },
+        })
+
 
 
 
         // ローソクグラフのデータ
         const candleSeries = chart.addSeries(CandlestickSeries);
         // 棒グラフのデータ
-        const histogramSeries = chart.addSeries(HistogramSeries);
+        const histogramSeries = miniChart.addSeries(HistogramSeries);
 
         // ダミーデータです↓    本実装時は消すように！！
         const dummyData = [
@@ -220,7 +249,12 @@ export default function Graph() {
         // 文字列で整形
         const oneMonthAgo = format(oneMonthAgoDate, 'yyyy-MM-dd');
 
+        // 初期表示範囲（最新の日付-1カ月前から）
         chart.timeScale().setVisibleRange({
+            from: oneMonthAgo,
+            to: latestTimeISO,
+        });
+        miniChart.timeScale().setVisibleRange({
             from: oneMonthAgo,
             to: latestTimeISO,
         });
@@ -236,6 +270,12 @@ export default function Graph() {
             if (chartRef.current) {
                 chart.applyOptions({
                     width: chartRef.current.clientWidth,
+                });
+            }
+
+            if (miniChartRef.current) {
+                miniChart.applyOptions({
+                    width: miniChartRef.current.clientWidth,
                 });
             }
         };
@@ -275,10 +315,24 @@ export default function Graph() {
                             xl: '1200px'
                         },
                         minHeight: '600px',
-                        border: '1px solid #fff',
+                        border: '1px solid #ddd',
                     }}
                 >
                     {/* この中にチャート描画 */}
+                </Box>
+
+                <Box ref={miniChartRef}
+                    sx={{
+                        width: {
+                            xs: '90%',
+                            sm: '75%',
+                            md: '60%',
+                            lg: '1000px',
+                            xl: '1200px'
+                        },
+                        border: '1px solid #ddd',
+                    }}>
+                    {/* この中に棒グラフ描画 */}
                 </Box>
 
                 <Box
@@ -295,8 +349,8 @@ export default function Graph() {
                     <MySetButtons id="candle" name="ローソク" active={true}></MySetButtons>
                     <MySetButtons id="bar" name="棒グラフ" active={true}></MySetButtons>
                     <MySetButtons id="line" name="折れ線" active={true}></MySetButtons>
-                    <MySetButtons id="A" name="A" active={true}></MySetButtons>
-                    <MySetButtons id="B" name="B" active={true}></MySetButtons>
+                    <MySetButtons id="A" name="移動平均線" active={true}></MySetButtons>
+                    <MySetButtons id="B" name="BBBBBBBBBBBBBB" active={true}></MySetButtons>
                     <MySetButtons id="C" name="C" active={true}></MySetButtons>
                     <MySetButtons id="C" name="C" active={true}></MySetButtons>
                     <MySetButtons id="C" name="C" active={true}></MySetButtons>

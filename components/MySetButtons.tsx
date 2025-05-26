@@ -21,7 +21,7 @@ export default function MySetButtons({ name, active }: props) {
     return (
         <Button
             sx={{
-                width: '100px',
+                width: 'auto',
                 height: '50px',
                 borderRadius: '10px',
                 margin: '10px',
