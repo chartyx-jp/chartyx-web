@@ -1,16 +1,29 @@
+"use client";
+
 import { Box, Typography } from '@mui/material';
 
-export default function Header() {
+import UserIcon from './UserIcon';
+
+type props = {
+    children?: React.ReactNode;
+}
+
+export default function Header({children}: props) {
     return (
         <Box
             sx={{
                 display: 'flex',
+                position: 'fixed',
+                top: 0,
+                zIndex: 999,
                 alignItems: 'center',
                 width: '100%',
-                height: '80px',
-                borderBottom: '1px solid white',
+                height: '60px',
+                borderBottom: '0.5px solid #ddd',
+                backgroundColor: '#000',
             }}
         >
+            {children}
             <Typography
                 sx={{
                     color: 'white',
@@ -24,6 +37,7 @@ export default function Header() {
             >
                 Chartyx
             </Typography>
+            <UserIcon></UserIcon>
         </Box>
     );
 }

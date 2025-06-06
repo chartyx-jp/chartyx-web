@@ -7,13 +7,30 @@ export default function HamburgerMenu() {
 
   return (
     <>
-      <IconButton onClick={() => setOpen(true)}>
-        <MenuIcon />
+      <IconButton onClick={() => setOpen(!open)}>
+        <MenuIcon/>
       </IconButton>
 
-      <Drawer anchor="left" open={open} onClose={() => setOpen(false)}>
+      <Drawer variant="temporary" anchor="left" open={open} hideBackdrop={true}
+        sx={{
+          width: 240,
+          flexShrink: 0,
+          '& .MuiDrawer-paper': {
+            width: 240,
+            boxSizing: 'border-box',
+            backgroundColor: '#000',
+            color: '#fff',
+            borderRight: '1px solid #555',
+            
+          },  
+        }}
+        ModalProps={{
+          disableScrollLock: true, // ★★★ ここを追加 ★★★
+          // keepMounted: true, // これはDrawerが常にDOMにマウントされるようにするもので、Persistent Drawerでは自動的にtrueになります
+        }}
+      >
         <List>
-          <ListItemButton>ホーム</ListItemButton>
+          <ListItemButton onClick={() => setOpen(!open)}>close</ListItemButton>
           <ListItemButton>設定</ListItemButton>
         </List>
       </Drawer>

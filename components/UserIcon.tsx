@@ -1,3 +1,5 @@
+"use client";
+
 import * as React from 'react';
 import Tooltip, { tooltipClasses } from '@mui/material/Tooltip';
 import { styled } from '@mui/material/styles';
@@ -8,6 +10,7 @@ import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle'; // アカウントアイコンの例
+
 
 // Tooltipのスタイルをカスタマイズして、よりリッチな表示領域にする
 const RichTooltip = styled(
@@ -39,7 +42,7 @@ const AccountInfoContent = () => (
         elevation={0}
         sx={{
             p: 2,
-            width: '100%',
+            width: 'auto',
         }}
     > 
         <Box
@@ -57,47 +60,61 @@ const AccountInfoContent = () => (
                     mr: 2,
                 }}
             >
-                U
+                a{/* アカウントアイコン */}
             </Avatar>
             <Box>
                 <Typography variant="h6">
-                    ユーザー名
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
                     user@example.com
                 </Typography>
             </Box>
         </Box>
-        <Typography variant="body2" sx={{ mb: 2 }}>
-            ここにアカウントに関する追加情報や説明文などを表示できます。
-        </Typography>
-
         {/* ユーザーが操作するボタン */}
         <Box
             sx={{
-                display: 'flex',
-                justifyContent: 'flex-end',
                 gap: 1,
             }}
         >
-            <Button size="small" variant="outlined">
-                プロフィール
+             <Button variant="outlined"
+                sx={{
+                    width: '100%',
+                    mb: 1,
+                }}
+             >
+                プランをアップグレード
             </Button>
-            <Button size="small" variant="contained" color="primary">
+            <Button variant="outlined"
+                sx={{
+                    width: '100%',
+                    mb: 1,
+                }}
+             >
+                設定
+            </Button>
+            <Button variant="contained" color="primary"
+                sx={{
+                    width: '100%',
+                    mb: 1,
+                }}
+            >
                 ログアウト
             </Button>
         </Box>
     </Paper>
 );
 
-export default function HoverAccountIconMUI() {
+// Reactコンポーネントとしてエクスポート
+const UserIcon: React.FC = () => {
   return (
-    <Box sx={{ padding: 5 /* 表示確認用の余白 */ }}>
-      <RichTooltip title={<AccountInfoContent />}>
-        <IconButton>
-          <AccountCircleIcon sx={{ fontSize: 40 }} />
-        </IconButton>
-      </RichTooltip>
-    </Box>
+      <Box sx={{
+        padding: 5, /* 表示確認用の余白 */ 
+        }}>
+        <RichTooltip title={<AccountInfoContent />}>
+          <IconButton>
+            <AccountCircleIcon sx={{ fontSize: 40 }} />
+          </IconButton>
+        </RichTooltip>
+      </Box>
   );
-}
+};
+
+export default UserIcon;

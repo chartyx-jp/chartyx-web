@@ -1,40 +1,44 @@
 import { Button, Typography } from '@mui/material';
-import { useState } from 'react';
 
 
 type props = {
     id: string
     name: string;
     active: boolean;
-    onClick?: () => void;
+    onClick: (id: string) => void;
 };
 
-export default function MySetButtons({ name, active }: props) {
-    const [isActive, setActive] = useState(active);
+export default function MySetButtons({ id, name, active, onClick }: props) {
+    // const [isActive, setActive] = useState(active);
 
-    const switchActive = () => {
-        setActive(active => !active);
-        active = isActive
-        console.log(active, isActive);
-    };
+    // const switchActive = () => {
+    //     setActive(active => !active);
+    //     active = isActive
+    //     console.log(active, isActive);
+    // };
 
     return (
         <Button
+            variant={active ? 'contained' : 'outlined'}
             sx={{
+                color: active ? '#fff' : '#aaa',
                 width: 'auto',
                 height: '50px',
                 borderRadius: '10px',
                 margin: '10px',
-                backgroundColor: isActive ? '#000' : '#fff',
+                '&:hover': {
+                    borderColor: '#888',
+                    color: '#fff',
+                },
             }}
-            fullWidth variant="outlined"
-            onClick={switchActive}
+            onClick={() => onClick(id)}
         >
             <Typography
                 sx={{
                     fontWeight: 'bold',
-                    color: isActive ? '#fff' : '#000',
                 }}
-            >{name}</Typography>
+            >
+                {name}
+            </Typography>
         </Button>
     );}

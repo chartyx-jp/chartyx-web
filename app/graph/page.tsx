@@ -1,24 +1,55 @@
 'use client';
 
 import { Box } from '@mui/material';
-import { CandlestickSeries, createChart, HistogramSeries } from 'lightweight-charts';
+import { CandlestickSeries, createChart, HistogramSeries, ISeriesApi, LineSeries } from 'lightweight-charts';
 import { subMonths, format, parseISO} from 'date-fns';
-import { useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 // import HamburgerMenu from '@/components/HamburgerMenu';
 import MySetButtons from '@/components/MySetButtons';
+import Header from '@/components/Header';
+import HamburgerMenu from '@/components/HamburgerMenu';
+
+type ChartSeries = {
+  [key: string]: ISeriesApi<'Candlestick'> | ISeriesApi<'Histogram'> | ISeriesApi<'Line'> | null;
+};
+
+type ActiveButtonStates = {
+  candle: boolean;
+  bar: boolean;
+  line: boolean;
+  A: boolean;
+  B: boolean;
+  C: boolean;
+  // ... 他のボタンもあれば追加
+  [key: string]: boolean;
+};
 
 
 export default function Graph() {
+    // LightWeightChartsのシリーズインスタンスを保持するref
+    const seriesRef = useRef<ChartSeries>({});
     const chartRef = useRef<HTMLDivElement>(null);
     const miniChartRef = useRef<HTMLDivElement>(null);
+
+    const [activeButtons, setActiveButtons] = useState<ActiveButtonStates>({
+        candle: true,
+        bar: true,
+        line: false,
+        A: true,
+        B: false,
+        C: false,
+        // ... (他のボタンもあれば追加)
+    });
+
     useEffect(() => {
         if (!chartRef.current || !miniChartRef.current) return(console.log('chart is null'));
         // chartContainerRef.currentはnullの可能性があるので、nullチェックを行う
         // lineChart
+
         const chart = createChart(chartRef.current, {
             width: chartRef.current.clientWidth,
-            height: 600,
+            height: chartRef.current.clientHeight,
             layout: {
                 background: {
                     color: '#000000',
@@ -42,7 +73,7 @@ export default function Graph() {
         // miniChart
         const miniChart = createChart(miniChartRef.current, {
             width: miniChartRef.current.clientWidth,
-            height: 150,
+            height: miniChartRef.current.clientHeight,
             layout: {
                 background: {
                     color: '#000000',
@@ -63,6 +94,16 @@ export default function Graph() {
             },
         })
 
+     // シリーズインスタンスを保持
+        // 既存のシリーズがある場合は、useEffectのクリーンアップで削除するようにする
+        seriesRef.current.candle = chart.addSeries(CandlestickSeries, {
+            upColor: '#26a69a', downColor: '#ef5350', borderVisible: false, wickVisible: true,
+        });
+        seriesRef.current.histogram = miniChart.addSeries(HistogramSeries, {
+            color: '#26a69a', // 例として色を設定
+        });
+        // 必要に応じて他のシリーズも追加
+        seriesRef.current.line = chart.addSeries(LineSeries,{ color: '#2196F3', lineWidth: 2 }); // 折れ線グラフを追加
 
 
 
@@ -73,52 +114,6 @@ export default function Graph() {
 
         // ダミーデータです↓    本実装時は消すように！！
         const dummyData = [
-            // { time: '2025-03-26', open: 100, high: 110, low: 90, close: 105 },
-            // { time: '2025-03-27', open: 100, high: 110, low: 90, close: 105 },
-            // { time: '2025-03-28', open: 100, high: 110, low: 90, close: 105 },
-            // { time: '2025-03-29', open: 100, high: 110, low: 90, close: 105 },
-            // { time: '2025-03-30', open: 100, high: 110, low: 90, close: 105 },
-            // { time: '2025-03-31', open: 100, high: 110, low: 90, close: 105 },
-            // { time: '2025-04-02', open: 105, high: 115, low: 100, close: 110 },
-            // { time: '2025-04-03', open: 110, high: 120, low: 100, close: 115 },
-            // { time: '2025-04-04', open: 115, high: 118, low: 110, close: 112 },
-            // { time: '2025-04-05', open: 115, high: 118, low: 110, close: 112 },
-            // { time: '2025-04-06', open: 115, high: 118, low: 110, close: 112 },
-            // { time: '2025-04-07', open: 115, high: 118, low: 110, close: 112 },
-            // { time: '2025-04-08', open: 115, high: 118, low: 110, close: 112 },
-            // { time: '2025-04-09', open: 115, high: 118, low: 110, close: 112 },
-            // { time: '2025-04-10', open: 115, high: 118, low: 110, close: 112 },
-            // { time: '2025-04-11', open: 115, high: 118, low: 110, close: 112 },
-            // { time: '2025-04-12', open: 115, high: 118, low: 110, close: 112 },
-            // { time: '2025-04-13', open: 115, high: 118, low: 110, close: 112 },
-            // { time: '2025-04-14', open: 115, high: 118, low: 110, close: 112 },
-            // { time: '2025-04-15', open: 115, high: 118, low: 110, close: 112 },
-            // { time: '2025-04-16', open: 115, high: 118, low: 110, close: 112 },
-            // { time: '2025-04-17', open: 115, high: 118, low: 110, close: 112 },
-            // { time: '2025-04-18', open: 115, high: 118, low: 110, close: 112 },
-            // { time: '2025-04-19', open: 115, high: 118, low: 110, close: 112 },
-            // { time: '2025-04-20', open: 115, high: 118, low: 110, close: 112 },
-            // { time: '2025-04-21', open: 115, high: 118, low: 110, close: 112 },
-            // { time: '2025-04-22', open: 115, high: 118, low: 110, close: 112 },
-            // { time: '2025-04-23', open: 115, high: 118, low: 110, close: 112 },
-            // { time: '2025-04-24', open: 115, high: 118, low: 110, close: 112 },
-            // { time: '2025-04-25', open: 115, high: 118, low: 110, close: 112 },
-            // { time: '2025-04-26', open: 115, high: 118, low: 110, close: 112 },
-            // { time: '2025-04-27', open: 115, high: 118, low: 110, close: 112 },
-            // { time: '2025-04-28', open: 115, high: 118, low: 110, close: 112 },
-            // { time: '2025-04-29', open: 115, high: 118, low: 110, close: 112 },
-            // { time: '2025-04-30', open: 115, high: 118, low: 110, close: 112 },
-            // { time: '2025-05-01', open: 115, high: 118, low: 110, close: 112 },
-            // { time: '2025-05-02', open: 115, high: 118, low: 110, close: 112 },
-            // { time: '2025-05-03', open: 115, high: 118, low: 110, close: 112 },
-            // { time: '2025-05-04', open: 115, high: 118, low: 110, close: 112 },
-            // { time: '2025-05-05', open: 115, high: 118, low: 110, close: 112 },
-            // { time: '2025-05-06', open: 115, high: 118, low: 110, close: 112 },
-            // { time: '2025-05-07', open: 115, high: 118, low: 110, close: 112 },
-            // { time: '2025-05-08', open: 115, high: 118, low: 110, close: 112 },
-            // { time: '2025-05-09', open: 115, high: 118, low: 110, close: 112 },
-            // { time: '2025-05-10', open: 115, high: 118, low: 110, close: 112 },
-            // { time: '2025-05-11', open: 115, high: 118, low: 110, close: 112 },
             {time:1732838400000,open:877,high:881,low:849,close:871,volume:14800},
             {time:1733097600000,open:885,high:885,low:850,close:850,volume:14800},
             {time:1733184000000,open:855,high:860,low:830,close:850,volume:16800},
@@ -229,7 +224,17 @@ export default function Graph() {
             
         }));
 
-        // ローソクグラフのデータをセット
+        console.log(dataFormatted);
+
+        // const initialDataLength = dataFormatted.length - 30;
+        // if (initialDataLength > 0) {
+        //     candleSeries.setData(dataFormatted.slice(0, initialDataLength));
+        // } else {
+        //     // データが30件未満の場合は全て表示するか、エラー処理
+        //     candleSeries.setData(dataFormatted);
+        // }
+        
+
         candleSeries.setData(dataFormatted);
 
         // 棒グラフのデータをセット
@@ -259,8 +264,34 @@ export default function Graph() {
             to: latestTimeISO,
         });
 
-        // ボタン管理
-        // const buttons = ['A', 'B', 'C', 'D', 'E'];
+
+        // function sleep(milliseconds: number) {
+        //     return new Promise(resolve => setTimeout(resolve, milliseconds));
+        // }
+
+    // async function rendering() {
+    //     const len = dataFormatted.length;
+    //     // dataFormatted.slice(0, initialDataLength) でセットしたので、
+    //     // 次にupdateするのは dataFormatted[initialDataLength] から dataFormatted[len - 1] まで
+    //     for (let j = 0; j < 30; j++) {
+    //         const dataIndex = initialDataLength + j;
+    //         if (dataIndex < len) {
+    //             const dataPoint = dataFormatted[dataIndex];
+    //             if (dataPoint) { // 念のためデータポイントの存在確認
+    //                 console.log(`Animating: Updating with dataPoint at index ${dataIndex}`, dataPoint);
+    //                 candleSeries.update(dataPoint);
+    //                 chart.timeScale().scrollToRealTime();
+    //                 await sleep(10); // アニメーションの速度を調整 (例: 200ms)
+    //             }
+    //         } else {
+    //             // アニメーション対象のデータが尽きた場合
+    //             break;
+    //         }
+    //     }
+    //     console.log('Animation sequence finished.');
+    // }
+
+    //     rendering();
 
 
 
@@ -284,80 +315,129 @@ export default function Graph() {
         return () => {
             window.removeEventListener('resize', handleResize);
             chart.removeSeries(candleSeries);
-            chart.removeSeries(histogramSeries);
+            miniChart.removeSeries(histogramSeries);
             chart.remove();
+            miniChart.remove();
         };
     }, []);
+
+    useEffect(() => {
+        // 各シリーズの表示状態を更新
+        seriesRef.current.candle?.applyOptions({ visible: activeButtons.candle });
+        seriesRef.current.histogram?.applyOptions({ visible: activeButtons.bar }); // 'bar'ボタンでヒストグラムを制御
+        seriesRef.current.line?.applyOptions({ visible: activeButtons.line }); // 'line'ボタンで折れ線を制御
+        // ... 他のシリーズがあれば同様に追加
+        // 例: seriesRef.current.movingAverage?.applyOptions({ visible: activeButtons.A });
+
+    }, [activeButtons]); // activeButtonsが変更されるたびに再実行
+
+        const handleButtonClick = (id: string) => {
+        setActiveButtons(prev => ({
+            ...prev,
+            [id]: !prev[id], // クリックされたボタンの状態を反転
+        }));
+    };
 
 
     return (
         <>
             <Box
                 sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
+                    marginTop: '60px',
                     width: '100vw',
-                    height: '100svh-80px',
-                    backgroundColor: '#000',
+                    height: '100svh-60px',
+                    position: 'relative',
                 }}
             >
-                {/* <HamburgerMenu></HamburgerMenu> */}
-
-                <Box ref={chartRef}
-                    sx={{
-                        marginTop: '20px',
-                        width: {
-                            xs: '90%',
-                            sm: '75%',
-                            md: '60%',
-                            lg: '1000px',
-                            xl: '1200px'
-                        },
-                        minHeight: '600px',
-                        border: '1px solid #ddd',
-                    }}
-                >
-                    {/* この中にチャート描画 */}
-                </Box>
-
-                <Box ref={miniChartRef}
-                    sx={{
-                        width: {
-                            xs: '90%',
-                            sm: '75%',
-                            md: '60%',
-                            lg: '1000px',
-                            xl: '1200px'
-                        },
-                        border: '1px solid #ddd',
-                    }}>
-                    {/* この中に棒グラフ描画 */}
-                </Box>
-
+                <Header>
+                    <HamburgerMenu></HamburgerMenu>
+                </Header>
                 <Box
                     sx={{
                         display: 'flex',
-                        flexWrap: 'wrap',
-                        width: {
-                            xs: '90%',
-                            md: '60%',
-                        },
-                        height: 'auto',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        width: '100vw',
+                        height: '100%',
+                        backgroundColor: '#000',
                     }}
                 >
-                    <MySetButtons id="candle" name="ローソク" active={true}></MySetButtons>
-                    <MySetButtons id="bar" name="棒グラフ" active={true}></MySetButtons>
-                    <MySetButtons id="line" name="折れ線" active={true}></MySetButtons>
-                    <MySetButtons id="A" name="移動平均線" active={true}></MySetButtons>
-                    <MySetButtons id="B" name="BBBBBBBBBBBBBB" active={true}></MySetButtons>
-                    <MySetButtons id="C" name="C" active={true}></MySetButtons>
-                    <MySetButtons id="C" name="C" active={true}></MySetButtons>
-                    <MySetButtons id="C" name="C" active={true}></MySetButtons>
-                    <MySetButtons id="C" name="C" active={true}></MySetButtons>
-                    <MySetButtons id="C" name="C" active={true}></MySetButtons>
-                    <MySetButtons id="C" name="C" active={true}></MySetButtons>
-                    <MySetButtons id="C" name="C" active={true}></MySetButtons>
+                    {/* 企業情報表示エリア */}
+                    <Box
+                        sx={{
+                            width: {
+                                xs: '90%',
+                                sm: '75%',
+                                md: '60%',
+                                lg: '1000px',
+                                xl: '1200px'
+                            },
+                            height: '150px',
+                            marginTop: '20px',
+                            display: 'flex',
+                            border: '1px solid #ddd',
+                            borderRadius: '5px',
+                        }}
+                    >
+
+                    </Box>
+
+                    <Box ref={chartRef}
+                        sx={{
+                            marginTop: '20px',
+                            width: {
+                                xs: '90%',
+                                sm: '75%',
+                                md: '60%',
+                                lg: '1000px',
+                                xl: '1200px'
+                            },
+                            aspectRatio: '16/9',
+                            border: '1px solid #ddd',
+                        }}
+                    >
+                        {/* この中にチャート描画 */}
+                    </Box>
+
+                    <Box ref={miniChartRef}
+                        sx={{
+                            width: {
+                                xs: '90%',
+                                sm: '75%',
+                                md: '60%',
+                                lg: '1000px',
+                                xl: '1200px'
+                            },
+                            height: '100px',
+                            border: '1px solid #ddd',
+                        }}>
+                        {/* この中に棒グラフ描画 */}
+                    </Box>
+
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            flexWrap: 'wrap',
+                            width: {
+                                xs: '90%',
+                                md: '60%',
+                            },
+                            height: 'auto',
+                        }}
+                    >
+                        <MySetButtons id="candle" name="ローソク" active={activeButtons.candle} onClick={handleButtonClick}></MySetButtons>
+                        {/* <MySetButtons id="bar" name="棒グラフ" active={activeButtons.bar} onClick={handleButtonClick}></MySetButtons>
+                        <MySetButtons id="line" name="折れ線" active={activeButtons.line} onClick={handleButtonClick}></MySetButtons>
+                        <MySetButtons id="A" name="移動平均線" active={activeButtons.a} onClick={handleButtonClick}></MySetButtons>
+                        <MySetButtons id="B" name="BBBBBBBBBBBBBB" active={activeButtons.b} onClick={handleButtonClick}></MySetButtons>
+                        <MySetButtons id="C" name="C" active={activeButtons.c} onClick={handleButtonClick}></MySetButtons>
+                        <MySetButtons id="D" name="D" active={activeButtons.d} onClick={handleButtonClick}></MySetButtons>
+                        <MySetButtons id="E" name="E" active={activeButtons.e} onClick={handleButtonClick}></MySetButtons>
+                        <MySetButtons id="F" name="F" active={activeButtons.f} onClick={handleButtonClick}></MySetButtons>
+                        <MySetButtons id="G" name="G" active={activeButtons.g} onClick={handleButtonClick}></MySetButtons>
+                        <MySetButtons id="H" name="H" active={activeButtons.h} onClick={handleButtonClick}></MySetButtons>
+                        <MySetButtons id="I" name="I" active={activeButtons.i} onClick={handleButtonClick}></MySetButtons> */}
+                    </Box>
                 </Box>
             </Box>
         </>

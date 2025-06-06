@@ -1,5 +1,4 @@
 import Footer from '@/components/Footer';
-import Header from '@/components/Header';
 import theme from '@/theme/theme';
 import { CssBaseline, ThemeProvider } from '@mui/material';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
@@ -30,7 +29,6 @@ export default function RootLayout({
                 <AppRouterCacheProvider>
                     <CssBaseline />
                     <ThemeProvider theme={theme}>
-                        <Header></Header>
                         {children}
                         <Footer></Footer>
                     </ThemeProvider>
