@@ -3,14 +3,14 @@
 
 import CustomTextField from '@/components/userInfoInputs';
 import { Box, Button, Typography } from '@mui/material';
-import { useRouter } from 'next/navigation';
+// import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 export default function Home() {
     const [address, setAddress] = useState('');
-    const [errorMessage, setErrorMessage] = useState('メールアドレスを入力してください');
+    const [errorMessage, setErrorMessage] = useState('メールアドレスが入力されていません');
 
-    const router = useRouter();
+    // const router = useRouter();
 
     const validateEmail = (value: string) => {
         if (value == '') {
@@ -21,6 +21,19 @@ export default function Home() {
             setErrorMessage('メールアドレスの形式が正しくありません');
         } else {
             setErrorMessage(''); // エラーメッセージをクリア
+        }
+    };
+
+    const fetchData = async () => {
+        try {
+            await fetch('http://localhost:8000/api/login/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',   // ←重要
+                body: JSON.stringify({ address })
+            });
+        } catch (error) {
+            console.error('Error fetching data:', error);
         }
     };
 
@@ -39,7 +52,7 @@ export default function Home() {
             onSubmit={(e) => {
                 e.preventDefault(); // フォームのデフォルトの送信を防ぐ
                 if (!errorMessage) {
-                    router.push('/register/plans');
+                    fetchData();
                 }
             }}
         >
@@ -58,6 +71,7 @@ export default function Home() {
             <CustomTextField
                 label="e-mail"
                 placeholder=""
+                value={address}
                 onChange={(e) => {
                     setAddress(e.target.value);
                     validateEmail(e.target.value);

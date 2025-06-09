@@ -26,7 +26,7 @@ export default function Home() {
                 }}
             >
                 <Link
-                    href="/graph"
+                    href="/main/graph"
                     style={{
                         textDecoration: 'none',
                     }}
