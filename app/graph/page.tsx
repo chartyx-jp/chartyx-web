@@ -1,6 +1,6 @@
 'use client';
 
-import { Box } from '@mui/material';
+import { Box, Typography} from '@mui/material';
 import { CandlestickSeries, createChart, HistogramSeries, ISeriesApi, LineSeries } from 'lightweight-charts';
 import { subMonths, format, parseISO} from 'date-fns';
 import { useState, useEffect, useRef } from 'react';
@@ -31,6 +31,7 @@ export default function Graph() {
     const seriesRef = useRef<ChartSeries>({});
     const chartRef = useRef<HTMLDivElement>(null);
     const miniChartRef = useRef<HTMLDivElement>(null);
+    const tooltipRef = useRef<HTMLDivElement>(null);
 
     const [activeButtons, setActiveButtons] = useState<ActiveButtonStates>({
         candle: true,
@@ -68,6 +69,9 @@ export default function Graph() {
                 locale: 'ja-JP',
                 dateFormat: 'yyyy/MM/dd',
             },
+            crosshair: {
+                mode: 1,
+            },
         });
 
         // miniChart
@@ -94,7 +98,7 @@ export default function Graph() {
             },
         })
 
-     // シリーズインスタンスを保持
+         // シリーズインスタンスを保持
         // 既存のシリーズがある場合は、useEffectのクリーンアップで削除するようにする
         seriesRef.current.candle = chart.addSeries(CandlestickSeries, {
             upColor: '#26a69a', downColor: '#ef5350', borderVisible: false, wickVisible: true,
@@ -106,11 +110,6 @@ export default function Graph() {
         seriesRef.current.line = chart.addSeries(LineSeries,{ color: '#2196F3', lineWidth: 2 }); // 折れ線グラフを追加
 
 
-
-        // ローソクグラフのデータ
-        const candleSeries = chart.addSeries(CandlestickSeries);
-        // 棒グラフのデータ
-        const histogramSeries = miniChart.addSeries(HistogramSeries);
 
         // ダミーデータです↓    本実装時は消すように！！
         const dummyData = [
@@ -218,6 +217,8 @@ export default function Graph() {
  
         ];
 
+        // ダミーデータの整形
+        // timeはミリ秒から日付文字列に変換
         const dataFormatted = dummyData.map((data) => ({
             ...data,
             time: new Date(data.time).toISOString().slice(0, 10), // '2024-11-29'
@@ -225,21 +226,13 @@ export default function Graph() {
         }));
 
         console.log(dataFormatted);
-
-        // const initialDataLength = dataFormatted.length - 30;
-        // if (initialDataLength > 0) {
-        //     candleSeries.setData(dataFormatted.slice(0, initialDataLength));
-        // } else {
-        //     // データが30件未満の場合は全て表示するか、エラー処理
-        //     candleSeries.setData(dataFormatted);
-        // }
         
-
-        candleSeries.setData(dataFormatted);
+        // ローソク足のデータをセット
+        seriesRef.current.candle.setData(dataFormatted);
 
         // 棒グラフのデータをセット
         // volumeは数値で渡す必要があるので、parseIntで変換
-        histogramSeries.setData(dataFormatted.map((data) => ({
+        seriesRef.current.histogram.setData(dataFormatted.map((data) => ({
             time: data.time,
             value: data.volume,
         })));
@@ -264,35 +257,70 @@ export default function Graph() {
             to: latestTimeISO,
         });
 
+        const tooltipElem = tooltipRef.current;
+        if (tooltipElem) {
+            chart.subscribeCrosshairMove((param) => {
+                if (param.time && param.point) {
+                    const data = param.seriesData.get(seriesRef.current.candle as ISeriesApi<'Candlestick'>);
+                    
+                    if (data) {
+                        const barData = data as { open: number; high: number; low: number; close: number; time: string };
+                        const volumeData = param.seriesData.get(seriesRef.current.histogram as ISeriesApi<'Histogram'>);
+                        const vol = volumeData ? (volumeData as { value: number; time: string }).value : 'N/A';
 
-        // function sleep(milliseconds: number) {
-        //     return new Promise(resolve => setTimeout(resolve, milliseconds));
-        // }
+                        console.log('data is ok');
 
-    // async function rendering() {
-    //     const len = dataFormatted.length;
-    //     // dataFormatted.slice(0, initialDataLength) でセットしたので、
-    //     // 次にupdateするのは dataFormatted[initialDataLength] から dataFormatted[len - 1] まで
-    //     for (let j = 0; j < 30; j++) {
-    //         const dataIndex = initialDataLength + j;
-    //         if (dataIndex < len) {
-    //             const dataPoint = dataFormatted[dataIndex];
-    //             if (dataPoint) { // 念のためデータポイントの存在確認
-    //                 console.log(`Animating: Updating with dataPoint at index ${dataIndex}`, dataPoint);
-    //                 candleSeries.update(dataPoint);
-    //                 chart.timeScale().scrollToRealTime();
-    //                 await sleep(10); // アニメーションの速度を調整 (例: 200ms)
-    //             }
-    //         } else {
-    //             // アニメーション対象のデータが尽きた場合
-    //             break;
-    //         }
-    //     }
-    //     console.log('Animation sequence finished.');
-    // }
+                        // 日付のフォーマット
+                        const date = format(parseISO(barData.time), 'yyyy/MM/dd');
 
-    //     rendering();
+                        console.log('Crosshair moved:', {data, volumeData, date});
 
+                        tooltipElem.style.display = 'block';
+                        tooltipElem.innerHTML = `
+                            <div><strong>${date}</strong></div>
+                            <div>始値: ${barData.open.toFixed(2)}</div>
+                            <div>高値: ${barData.high.toFixed(2)}</div>
+                            <div>安値: ${barData.low.toFixed(2)}</div>
+                            <div>終値: ${barData.close.toFixed(2)}</div>
+                            <div>出来高: ${vol.toLocaleString()}</div>
+                        `;
+
+                        // ツールチップの位置を調整
+                        const chartContainer = chartRef.current;
+                        if (chartContainer) {
+                            const chartRect = chartContainer.getBoundingClientRect();
+                            // マウスカーソルのX座標 (チャート内での相対位置)
+                            const x = param.point.x;
+                            // マウスカーソルのY座標 (チャート内での相対位置)
+                            const y = param.point.y;
+
+                            // ツールチップの幅と高さに基づいて位置を調整
+                            const tooltipWidth = tooltipElem.offsetWidth;
+                            const tooltipHeight = tooltipElem.offsetHeight;
+
+                            // ツールチップがチャートの右端からはみ出さないように調整
+                            let left = x + 10; // カーソルから少し右にずらす
+                            if (left + tooltipWidth > chartRect.width) {
+                                left = x - tooltipWidth - 10; // 左に表示
+                            }
+
+                            // ツールチップがチャートの下端からはみ出さないように調整
+                            let top = y + 10; // カーソルから少し下にずらす
+                            if (top + tooltipHeight > chartRect.height) {
+                                top = y - tooltipHeight - 10; // 上に表示
+                            }
+
+                            tooltipElem.style.left = `${left}px`;
+                            tooltipElem.style.top = `${top}px`;
+                        }
+                    } else {
+                        tooltipElem.style.display = 'none'; // データがない場合は非表示
+                    }
+                } else {
+                    tooltipElem.style.display = 'none'; // カーソルがチャート外に出た場合
+                }
+            });
+        }
 
 
 
@@ -314,8 +342,6 @@ export default function Graph() {
 
         return () => {
             window.removeEventListener('resize', handleResize);
-            chart.removeSeries(candleSeries);
-            miniChart.removeSeries(histogramSeries);
             chart.remove();
             miniChart.remove();
         };
@@ -345,7 +371,7 @@ export default function Graph() {
                 sx={{
                     marginTop: '60px',
                     width: '100vw',
-                    height: '100svh-60px',
+                    height: 'calc(100svh-60px)',
                     position: 'relative',
                 }}
             >
@@ -374,12 +400,42 @@ export default function Graph() {
                             },
                             height: '150px',
                             marginTop: '20px',
-                            display: 'flex',
                             border: '1px solid #ddd',
                             borderRadius: '5px',
                         }}
                     >
-
+                        <Box
+                            sx={{
+                                height: '50%',
+                                display: 'flex',
+                                justifyContent: 'flex-start',
+                            }}>
+                            <Typography
+                                variant="h5"
+                                sx={{
+                                    color: '#fff',
+                                    margin: '10px',
+                                }}
+                            >
+                                1234
+                            </Typography>
+                            <Typography
+                                variant="h6"
+                                sx={{
+                                    color: '#fff',
+                                    margin: '10px',
+                                }}
+                            >
+                                XXX株式会社
+                            </Typography>
+                        </Box>
+                        <Typography
+                            variant="h4"
+                            sx={{
+                                color: '#fff',
+                                flexGrow: 1,
+                            }}
+                        >123,456.78円</Typography>
                     </Box>
 
                     <Box ref={chartRef}
@@ -394,9 +450,29 @@ export default function Graph() {
                             },
                             aspectRatio: '16/9',
                             border: '1px solid #ddd',
+                            position: 'relative',
+                            zIndex: 1, // ツールチップがチャートの上に表示されるように
                         }}
                     >
                         {/* この中にチャート描画 */}
+                        {/* ツールチップ表示エリア */}
+                        <Box
+                            ref={tooltipRef}
+                            sx={{
+                                position: 'absolute',
+                                display: 'none', // 初期状態は非表示
+                                padding: '8px',
+                                background: 'rgba(0, 0, 0, 0.8)',
+                                color: '#fff',
+                                border: '1px solid #555',
+                                borderRadius: '4px',
+                                fontSize: '14px',
+                                zIndex: 10000, // チャートの上に表示されるように
+                                pointerEvents: 'none', // ツールチップ自体がマウスイベントをブロックしないように
+                                whiteSpace: 'nowrap', // テキストが折り返さないように
+                                minWidth: '150px', // ツールチップの最小幅
+                            }}
+                        />
                     </Box>
 
                     <Box ref={miniChartRef}
@@ -426,7 +502,7 @@ export default function Graph() {
                         }}
                     >
                         <MySetButtons id="candle" name="ローソク" active={activeButtons.candle} onClick={handleButtonClick}></MySetButtons>
-                        {/* <MySetButtons id="bar" name="棒グラフ" active={activeButtons.bar} onClick={handleButtonClick}></MySetButtons>
+                        <MySetButtons id="bar" name="棒グラフ" active={activeButtons.bar} onClick={handleButtonClick}></MySetButtons>
                         <MySetButtons id="line" name="折れ線" active={activeButtons.line} onClick={handleButtonClick}></MySetButtons>
                         <MySetButtons id="A" name="移動平均線" active={activeButtons.a} onClick={handleButtonClick}></MySetButtons>
                         <MySetButtons id="B" name="BBBBBBBBBBBBBB" active={activeButtons.b} onClick={handleButtonClick}></MySetButtons>
@@ -436,7 +512,7 @@ export default function Graph() {
                         <MySetButtons id="F" name="F" active={activeButtons.f} onClick={handleButtonClick}></MySetButtons>
                         <MySetButtons id="G" name="G" active={activeButtons.g} onClick={handleButtonClick}></MySetButtons>
                         <MySetButtons id="H" name="H" active={activeButtons.h} onClick={handleButtonClick}></MySetButtons>
-                        <MySetButtons id="I" name="I" active={activeButtons.i} onClick={handleButtonClick}></MySetButtons> */}
+                        <MySetButtons id="I" name="I" active={activeButtons.i} onClick={handleButtonClick}></MySetButtons>
                     </Box>
                 </Box>
             </Box>

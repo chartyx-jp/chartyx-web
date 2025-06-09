@@ -73,6 +73,33 @@ export default function Home() {
                     </Typography>
                 </Link>
             </button>
+            <button
+                style={{
+                    background: 'none',
+                    border: 'solid 1px #fff',
+                    cursor: 'pointer',
+                    margin: '20px',
+                }}
+            >
+                <Link
+                    href="/top"
+                    style={{
+                        textDecoration: 'none',
+                    }}
+                >
+                    <Typography
+                        sx={{
+                            fontWeight: 'bold',
+                            color: 'white',
+                            '&:hover': {
+                                color: '#00ff00', // ホバー時の色
+                            },
+                        }}
+                    >
+                        トップページ
+                    </Typography>
+                </Link>
+            </button>
         </Box>
     );
 }
