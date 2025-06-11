@@ -1,4 +1,3 @@
-import Footer from '@/components/Footer';
 import theme from '@/theme/theme';
 import { CssBaseline, ThemeProvider } from '@mui/material';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
@@ -20,7 +19,6 @@ export default async function RegisterLayout({
             <CssBaseline />
             <ThemeProvider theme={theme}>
                 {children}
-                <Footer></Footer>
             </ThemeProvider>
         </AppRouterCacheProvider>
     );

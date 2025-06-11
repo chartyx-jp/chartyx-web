@@ -3,6 +3,7 @@ import theme from '@/theme/theme';
 import { CssBaseline, ThemeProvider } from '@mui/material';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 import type { Metadata } from 'next';
+import { AuthProvider } from './contexts/AuthContexts';
 
 export const metadata: Metadata = {
     title: 'Create Next App',
@@ -30,7 +31,9 @@ export default async function RootLayout({
                 <AppRouterCacheProvider>
                     <CssBaseline />
                     <ThemeProvider theme={theme}>
-                        {children}
+                        <AuthProvider>
+                            {children}
+                        </AuthProvider>
                         <Footer></Footer>
                     </ThemeProvider>
                 </AppRouterCacheProvider>

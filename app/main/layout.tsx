@@ -1,4 +1,4 @@
-import Footer from '@/components/Footer';
+// チャート表示レイアウト
 import theme from '@/theme/theme';
 import { CssBaseline, ThemeProvider } from '@mui/material';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
@@ -57,7 +57,6 @@ export default async function MainLayout({
             <CssBaseline />
             <ThemeProvider theme={theme}>
                 {children}
-                <Footer></Footer>
             </ThemeProvider>
         </AppRouterCacheProvider>
     );

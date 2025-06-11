@@ -1,41 +1,16 @@
-// メールアドレス入力画面
+// ログイン画面
 'use client';
 
 import CustomTextField from '@/components/userInfoInputs';
 import { Box, Button, Typography } from '@mui/material';
-// import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import Link from 'next/link';
+
+import { Validator } from '@/lib/utils/validator'; // バリデーションライブラリをインポート
 
 export default function Home() {
-    const [address, setAddress] = useState('');
-    const [errorMessage, setErrorMessage] = useState('メールアドレスが入力されていません');
-
-    // const router = useRouter();
-
-    const validateEmail = (value: string) => {
-        if (value == '') {
-            console.log('メールアドレスが入力されていません');
-            setErrorMessage('メールアドレスが入力されていません');
-        } else if (!value.match(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)) {
-            console.log('メールアドレスの形式が正しくありません');
-            setErrorMessage('メールアドレスの形式が正しくありません');
-        } else {
-            setErrorMessage(''); // エラーメッセージをクリア
-        }
-    };
-
-    const fetchData = async () => {
-        try {
-            await fetch('http://localhost:8000/api/login/', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',   // ←重要
-                body: JSON.stringify({ address })
-            });
-        } catch (error) {
-            console.error('Error fetching data:', error);
-        }
-    };
+    const [errorMessage, setErrorMessage] = useState('');
+    
 
     return (
         <Box
@@ -51,9 +26,6 @@ export default function Home() {
             component={'form'}
             onSubmit={(e) => {
                 e.preventDefault(); // フォームのデフォルトの送信を防ぐ
-                if (!errorMessage) {
-                    fetchData();
-                }
             }}
         >
             <Typography
@@ -71,10 +43,10 @@ export default function Home() {
             <CustomTextField
                 label="e-mail"
                 placeholder=""
-                value={address}
                 onChange={(e) => {
-                    setAddress(e.target.value);
-                    validateEmail(e.target.value);
+                    const emailAddress = e.target.value;
+                    const validationResult = Validator.validateEmail(emailAddress);
+                    setErrorMessage(validationResult.message || '');
                 }}
             />
 
@@ -106,6 +78,12 @@ export default function Home() {
             </Button>
             {/* {isLoading && <div>Loading...</div>}  ローカルなローディング表示 
             {data && <pre>{JSON.stringify(data, null, 2)}</pre>} */}
+            <Link href='register/create_account'>
+                <Typography>
+                    createAccount
+                </Typography>
+            </Link>
+        
         </Box>
     );
 }
