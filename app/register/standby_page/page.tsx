@@ -1,7 +1,21 @@
 'use client'
 import { Box, Typography } from '@mui/material';
+import { useEffect } from 'react';
+
+import { useAuth } from '@/app/contexts/AuthContexts';
 
 export default function StandbyPage() {
+    const { grobalEmail } = useAuth()
+
+        useEffect(() => {
+            if(grobalEmail) {
+                console.log(`email changed ${grobalEmail}`)
+            } else {
+                console.log('email reset')
+            }
+        }, [grobalEmail]);
+
+
     return (
         <Box
             sx={{
@@ -22,7 +36,7 @@ export default function StandbyPage() {
                     textDecoration: 'none',
                 }}
             >
-                
+                {grobalEmail}
             </Typography>
         </Box>
     )

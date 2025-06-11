@@ -4,6 +4,7 @@
 import CustomTextField from '@/components/userInfoInputs';
 import { Box, Button, Typography } from '@mui/material';
 import { useState, useEffect } from 'react';
+import{ useRouter } from 'next/navigation';
 
 import { ApiClient } from '@/lib/api/apiClient'; // APIクライアントをインポート
 import { Validator } from '@/lib/utils/validator'; // バリデーションライブラリをインポート
@@ -19,6 +20,8 @@ export default function Signup() {
     // const[isDomainValid, setIsDomainValid] = useState(false)
     const[inputEmail, setInputEmail] = useState('')
     const[isButtonDisabled, setIsButtonDisabled] = useState(true)
+
+    const router = useRouter()
 
     // 全てのページでユーザーの検証に使うメールアドレスのセット
     useEffect(() => {
@@ -63,6 +66,7 @@ export default function Signup() {
             const response = await apiClient.request(`/users/auth/send-otp-signup/`, 'POST', {'emailAddress':grobalEmail});
             if (response.ok) {
                 console.log(response)
+                router.push('/register/standby_page')
             }
         } catch(error) {
             console.log(error)
