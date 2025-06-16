@@ -4,7 +4,7 @@
 export class ApiClient {
     private baseUrl: string;
     private headers = {'Content-Type': 'application/json'};
-    constructor(baseUrl: string = 'http://10.192.94.199:8000') {
+    constructor(baseUrl: string = 'http://10.192.74.150:8000') {
         this.baseUrl = baseUrl;
     }
 

@@ -3,13 +3,46 @@
 
 import CustomTextField from '@/components/userInfoInputs';
 import { Box, Button, Typography } from '@mui/material';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import{ useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useAuth } from '@/app/contexts/AuthContexts';
 
 import { Validator } from '@/lib/utils/validator'; // バリデーションライブラリをインポート
+import { ApiClient } from '@/lib/api/apiClient';
+
+const apiClient = new ApiClient
 
 export default function Home() {
     const [errorMessage, setErrorMessage] = useState('');
+    const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+    const [emailAddress, setEmailAddress] = useState('')
+    const [password, setPassword] = useState('')
+    const router = useRouter()
+    // const [validationResult, setValidResult] = useState('');
+    
+    const { grobalEmail, setEmail } = useAuth();
+    
+    useEffect(() => {
+        if(grobalEmail) {
+            console.log(`email changed ${grobalEmail}`)
+        } else {
+            console.log('email reset')
+        }
+    }, [grobalEmail]);
+
+    const signin = async() => {
+        setIsButtonDisabled(true)
+        try{
+            const response = await apiClient.request(`/users/auth/login/`, 'POST', {emailAddress: emailAddress, password: password})
+            if (response.ok){
+                setEmail(emailAddress)
+                router.push('/main/graph')
+            }
+        }catch(error){
+            console.log(error)
+        }
+    }    
     
 
     return (
@@ -36,7 +69,7 @@ export default function Home() {
                     marginBottom: '20px',
                 }}
             >
-                アカウント作成
+                ログイン
             </Typography>
 
             {/* メールアドレス */}
@@ -44,9 +77,22 @@ export default function Home() {
                 label="e-mail"
                 placeholder=""
                 onChange={(e) => {
-                    const emailAddress = e.target.value;
+                    setEmailAddress(e.target.value);
                     const validationResult = Validator.validateEmail(emailAddress);
+                    if (validationResult.isValid == true){
+                        console.log(validationResult)
+                        setIsButtonDisabled(false)
+                    }
                     setErrorMessage(validationResult.message || '');
+                }}
+            />
+
+            {/* メールアドレス */}
+            <CustomTextField
+                label="password"
+                placeholder=""
+                onChange={(e) => {
+                    setPassword(e.target.value);
                 }}
             />
 
@@ -68,20 +114,23 @@ export default function Home() {
                     width: '200px',
                 }}
                 type="submit"
-                disabled={!!errorMessage} // エラーメッセージがある場合はボタンを無効化
-                // onClick={() => {
-                //     fetchData();
-                // }}
-                // disabled={isLoading}
+                disabled={isButtonDisabled}
+                onClick={() => {
+                    signin();
+                }}
             >
-                メンバー登録
+                ログイン
             </Button>
             {/* {isLoading && <div>Loading...</div>}  ローカルなローディング表示 
             {data && <pre>{JSON.stringify(data, null, 2)}</pre>} */}
-            <Link href='register/create_account'>
-                <Typography>
-                    createAccount
-                </Typography>
+            <Link href='register/create_account'
+                style={{
+                    textDecoration: 'none',
+                    color: 'white',
+                    margin: '20px',
+                }}
+            >
+                アカウントをお持ちでない方はこちら
             </Link>
         
         </Box>
