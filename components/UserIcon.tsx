@@ -10,7 +10,11 @@ import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle'; // アカウントアイコンの例
+import { useRouter } from 'next/navigation';
 
+import { ApiClient } from '@/lib/api/apiClient';
+
+const apiClient = new ApiClient
 
 // Tooltipのスタイルをカスタマイズして、よりリッチな表示領域にする
 const RichTooltip = styled(
@@ -33,10 +37,24 @@ const RichTooltip = styled(
        boxShadow: theme.shadows[3], // 矢印にも影を適用
     }
   },
-}));
+}));  
 
 // Tooltip内に表示するコンテンツ
-const AccountInfoContent = () => (
+const AccountInfoContent = () => {
+    const router = useRouter()
+
+    const signout = async() => {
+        console.log('signout run')
+        try {
+            const response = await apiClient.request('/users/logout/', 'POST')
+            if(response.ok) {
+                router.push('/register')
+            }
+        }catch(error) {
+            console.log(error)
+        }
+    }
+    return(
     // Paperでコンテンツを囲む
     <Paper 
         elevation={0}
@@ -95,12 +113,16 @@ const AccountInfoContent = () => (
                     width: '100%',
                     mb: 1,
                 }}
+                onClick={
+                    signout
+                }
             >
                 ログアウト
             </Button>
         </Box>
     </Paper>
-);
+    );
+};
 
 // Reactコンポーネントとしてエクスポート
 const UserIcon: React.FC = () => {

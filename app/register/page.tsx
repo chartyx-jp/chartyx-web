@@ -37,6 +37,7 @@ export default function Home() {
             const response = await apiClient.request(`/users/auth/login/`, 'POST', {emailAddress: emailAddress, password: password})
             if (response.ok){
                 setEmail(emailAddress)
+                console.log(response)
                 router.push('/main/graph')
             }
         }catch(error){
