@@ -34,14 +34,18 @@ export default function Home() {
     const signin = async() => {
         setIsButtonDisabled(true)
         try{
-            const response = await apiClient.request(`/users/auth/login/`, 'POST', {emailAddress: emailAddress, password: password})
-            if (response.ok){
-                setEmail(emailAddress)
-                console.log(response)
-                router.push('/main/graph')
-            }
+            const response = await apiClient.request(
+                `/api/users/auth/login/`,
+                'POST',
+                { emailAddress: emailAddress, password: password }
+            );
+            setEmail(emailAddress)
+            console.log(response)
+            router.push('/main/graph')
         }catch(error){
             console.log(error)
+        }finally {
+            setIsButtonDisabled(false);
         }
     }    
     
