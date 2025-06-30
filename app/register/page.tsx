@@ -9,9 +9,6 @@ import Link from 'next/link';
 import { useAuth } from '@/app/contexts/AuthContexts';
 
 import { Validator } from '@/lib/utils/validator'; // バリデーションライブラリをインポート
-import { ApiClient } from '@/lib/api/apiClient';
-
-const apiClient = new ApiClient
 
 export default function Home() {
     const [errorMessage, setErrorMessage] = useState('');
@@ -34,14 +31,25 @@ export default function Home() {
     const signin = async() => {
         setIsButtonDisabled(true)
         try{
-            const response = await apiClient.request(
-                `/api/users/auth/login/`,
-                'POST',
-                { emailAddress: emailAddress, password: password }
-            );
-            setEmail(emailAddress)
-            console.log(response)
-            router.push('/main/graph')
+            const response = await fetch('/api/proxy', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    endPoint: `/users/auth/login/`,
+                    emailAddress: emailAddress,
+                    password: password
+                }),
+        });
+            console.log('response', response)
+            if(response.ok) {
+                setEmail(emailAddress)
+                console.log(response)
+                router.push('/main/graph')
+            }else if(response.status == 404) {
+                setErrorMessage('メールアドレスまたはパスワードが間違っています。');
+            }
         }catch(error){
             console.log(error)
         }finally {

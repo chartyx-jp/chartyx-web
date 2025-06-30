@@ -9,15 +9,11 @@ export class ApiClient {
     public async request(
         endpoint: string,
         method: string,
+        headers: HeadersInit = { 'Content-Type': 'application/json' },
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         body?: any,
-        customHeaders?: HeadersInit
     ): Promise<Response> {
         const url = `${this.baseUrl}${endpoint}`;
-        const headers: HeadersInit = {
-            'Content-Type': 'application/json',
-            ...(customHeaders || {}),
-        };
 
         const options: RequestInit = {
             method,
@@ -25,15 +21,15 @@ export class ApiClient {
             credentials: 'include', // 認証クッキーが必要なら
         };
 
-        if (body && method.toUpperCase() !== 'GET') {
+        console.log(`Request URL: ${url}`);
+        console.log(`Request Method: ${method}`);
+
+        if (body) {
             options.body = JSON.stringify(body);
+            console.log(`Request Body: ${JSON.stringify(body)}`);
         }
 
         const response = await fetch(url, options);
-        if (!response.ok) {
-            // エラーハンドリングも一箇所に
-            throw new Error(`HTTP error: ${response.status}`);
-        }
         // 必要なら .text() や .blob() も選択可
         return response;
     }
