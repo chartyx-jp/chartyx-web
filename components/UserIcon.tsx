@@ -1,142 +1,176 @@
 "use client";
 
 import * as React from 'react';
-import Tooltip, { tooltipClasses } from '@mui/material/Tooltip';
-import { styled } from '@mui/material/styles';
+import Popover from '@mui/material/Popover';
 import Typography from '@mui/material/Typography';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle'; // アカウントアイコンの例
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+// import { redirect } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 
-import { ApiClient } from '@/lib/api/apiClient';
+// RichTooltipの定義は不要になります。
+// 必要であればPopoverのPaperPropsでスタイルを調整します。
 
-const apiClient = new ApiClient
+// Popover内に表示するコンテンツ
+// Popoverを閉じるためのonCloseプロパティを受け取るように変更
+const AccountInfoContent = ({ onClose }: { onClose: () => void }) => {
+    const router = useRouter();
 
-// Tooltipのスタイルをカスタマイズして、よりリッチな表示領域にする
-const RichTooltip = styled(
-  ({ className, ...props }: React.ComponentProps<typeof Tooltip> & { className?: string }) => (
-    <Tooltip {...props} classes={{ popper: className }} placement="bottom-start" arrow />
-  )
-)(({ theme }) => ({
-  [`& .${tooltipClasses.tooltip}`]: {
-    backgroundColor: theme.palette.background.paper,
-    color: 'rgba(0, 0, 0, 0.87)',
-    boxShadow: theme.shadows[3], // 少し濃い影
-    fontSize: theme.typography.pxToRem(12),
-    padding: 0, // Paperコンポーネント側でパディングを制御するため0に
-    maxWidth: 350, // 最大幅を指定
-    borderRadius: theme.shape.borderRadius,
-  },
-  [`& .${tooltipClasses.arrow}`]: { // 矢印の色もPaperに合わせる
-    color: theme.palette.background.paper,
-    '&:before': {
-       boxShadow: theme.shadows[3], // 矢印にも影を適用
-    }
-  },
-}));  
-
-// Tooltip内に表示するコンテンツ
-const AccountInfoContent = () => {
-    const router = useRouter()
-
-    const signout = async() => {
-        console.log('signout run')
+    const signout = async () => {
+        console.log('signout run'); // ここが動作することを確認
         try {
-            const response = await apiClient.request('/users/logout/', 'POST')
-            if(response.ok) {
-                router.push('/register')
-            }
-        }catch(error) {
-            console.log(error)
-        }
-    }
-    return(
-    // Paperでコンテンツを囲む
-    <Paper 
-        elevation={0}
-        sx={{
-            p: 2,
-            width: 'auto',
-        }}
-    > 
-        <Box
-            sx={{
-                display: 'flex',
-                alignItems: 'center',
-                mb: 2,
-            }}
-        >
-            {/* アイコン */}
-            <Avatar
-                sx={{
-                    width: 56,
-                    height: 56,
-                    mr: 2,
-                }}
-            >
-                a{/* アカウントアイコン */}
-            </Avatar>
-            <Box>
-                <Typography variant="h6">
-                    user@example.com
-                </Typography>
-            </Box>
-        </Box>
-        {/* ユーザーが操作するボタン */}
-        <Box
-            sx={{
-                gap: 1,
-            }}
-        >
-             <Button variant="outlined"
-                sx={{
-                    width: '100%',
-                    mb: 1,
-                }}
-             >
-                プランをアップグレード
-            </Button>
-            <Button variant="outlined"
-                sx={{
-                    width: '100%',
-                    mb: 1,
-                }}
-             >
-                設定
-            </Button>
-            <Button variant="contained" color="primary"
-                sx={{
-                    width: '100%',
-                    mb: 1,
-                }}
-                onClick={
-                    signout
+            const response = await fetch('/api/proxy', // Next.jsのAPIルートを使用
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        endPoint: '/users/logout/',
+                    }),
                 }
+            );
+            console.log(response)
+            if (response.ok) {
+                onClose(); // サインアウト成功時にポップオーバーを閉じる
+                router.push('/register');
+            } else {
+                // エラーレスポンスの場合もログを出す
+                const errorData = await response.json();
+                console.error('Logout failed:', response.status, errorData);
+            }
+        } catch (error) {
+            console.error('Error during signout:', error); // エラーメッセージをより詳細に
+        }
+    };
+
+    return (
+        // Paperでコンテンツを囲む。PopoverのスタイルはPaperPropsで調整するため、ここでは基本的な設定のみ。
+        <Paper
+            // PopoverのPaperPropsでshadows[3]に相当するelevationを指定するため、ここでは0
+            // もしPaper自体に影が必要なら、elevationを設定
+            elevation={0}
+            sx={{
+                p: 2,
+                width: 'auto',
+                maxWidth: 350,
+                // borderRadiusはPopoverのPaperPropsで設定することが多い
+            }}
+        >
+            <Box
+                sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    mb: 2,
+                }}
             >
-                ログアウト
-            </Button>
-        </Box>
-    </Paper>
+                <Avatar
+                    sx={{
+                        width: 56,
+                        height: 56,
+                        mr: 2,
+                    }}
+                >
+                    A
+                </Avatar>
+                <Box>
+                    <Typography variant="h6">
+                        user@example.com
+                    </Typography>
+                </Box>
+            </Box>
+            <Box
+                sx={{
+                    display: 'flex',
+                    flexDirection: 'column', // ボタンを縦に並べる
+                    gap: 1,
+                }}
+            >
+                <Button variant="outlined"
+                    sx={{
+                        width: '100%',
+                    }}
+                >
+                    プランをアップグレード
+                </Button>
+                <Button variant="outlined"
+                    sx={{
+                        width: '100%',
+                    }}
+                >
+                    設定
+                </Button>
+                <Button variant="contained" color="primary"
+                    sx={{
+                        width: '100%',
+                    }}
+                    onClick={signout}
+                >
+                    ログアウト
+                </Button>
+            </Box>
+        </Paper>
     );
 };
 
 // Reactコンポーネントとしてエクスポート
 const UserIcon: React.FC = () => {
-  return (
-      <Box sx={{
-        padding: 5, /* 表示確認用の余白 */ 
+    // Popoverの開閉状態と、アンカー要素（クリックされた要素）を管理
+    const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
+
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    const open = Boolean(anchorEl); // anchorElがnullでなければ開いている状態
+    const id = open ? 'account-popover' : undefined; // アクセシビリティのためのID
+
+    return (
+        <Box sx={{
+            paddingLeft: 2,
+            paddingRight: 5,
         }}>
-        <RichTooltip title={<AccountInfoContent />}>
-          <IconButton>
-            <AccountCircleIcon sx={{ fontSize: 40 }} />
-          </IconButton>
-        </RichTooltip>
-      </Box>
-  );
+            <IconButton
+                aria-describedby={id} // PopoverのIDを関連付ける
+                onClick={handleClick} // クリックでPopoverを開く
+            >
+                <AccountCircleIcon sx={{ fontSize: 40 }} />
+            </IconButton>
+
+            <Popover
+                id={id}
+                open={open}
+                anchorEl={anchorEl} // どの要素の横に表示するか
+                onClose={handleClose} // Popoverの外をクリックしたときに閉じる
+                anchorOrigin={{
+                    vertical: 'bottom', // アンカー要素の下端に合わせる
+                    horizontal: 'left', // アンカー要素の左端に合わせる
+                }}
+                transformOrigin={{
+                    vertical: 'top', // Popoverの上端をアンカー要素に合わせる
+                    horizontal: 'left', // Popoverの左端をアンカー要素に合わせる
+                }}
+                // Popover内部のPaperコンポーネントにスタイルを適用
+                PaperProps={{
+                    sx: {
+                        boxShadow: 3, // 少し濃い影 (theme.shadows[3]に相当)
+                        borderRadius: 1, // Material-UIのデフォルトborderRadius
+                    }
+                }}
+            >
+                {/* Popover内に表示するコンテンツ。onCloseを渡して、内部から閉じられるようにする */}
+                <AccountInfoContent onClose={handleClose} />
+            </Popover>
+        </Box>
+    );
 };
 
 export default UserIcon;

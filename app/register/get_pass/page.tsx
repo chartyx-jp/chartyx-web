@@ -1,140 +1,255 @@
-// メールアドレス入力画面
-'use client';
+"use client";
 
-import CustomTextField from '@/components/userInfoInputs';
-import { Box, Button, Typography } from '@mui/material';
-import { useState, useEffect } from 'react';
-import{ useRouter } from 'next/navigation';
+import { useForm, SubmitHandler } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import {
+  Container,
+  Box,
+  Paper,
+  Typography,
+  TextField,
+  MenuItem,
+  Alert,
+  Grid,
+} from "@mui/material";
+import { LoadingButton } from "@mui/lab";
 
-import { ApiClient } from '@/lib/api/apiClient'; // APIクライアントをインポート
-import { Validator } from '@/lib/utils/validator'; // バリデーションライブラリをインポート
-import { useAuth } from '@/app/contexts/AuthContexts';
-// import { validateDomainForEmail } from '@/lib/utils/validateDomain';
+// Zodスキーマでバリデーションルールを定義
+const signupSchema = z.object({
+  password: z
+    .string()
+    .min(8, "パスワードは8文字以上で入力してください。")
+    .max(100, "パスワードは100文字以内で入力してください。"),
+  lastName: z
+    .string()
+    .min(1, "姓を入力してください。")
+    .max(50, "姓は50文字以内で入力してください。"),
+  firstName: z
+    .string()
+    .min(1, "名を入力してください。")
+    .max(50, "名は50文字以内で入力してください。"),
+  gender: z.enum(["male", "female", "other"], {
+    errorMap: () => ({ message: "性別を選択してください。" }),
+  }),
+  birthday: z
+    .string()
+    .min(1, "誕生日を入力してください。")
+    .refine((val) => !isNaN(Date.parse(val)), {
+      message: "有効な日付を入力してください。",
+    }),
+  phoneNumber: z
+    .string()
+    .min(1, "携帯電話番号を入力してください。")
+    .regex(
+      /^\d{2,4}-\d{3,4}-\d{4}$/,
+      "有効な電話番号（例: 090-1234-5678）を入力してください。"
+    ),
+  address: z
+    .string()
+    .min(1, "住所を入力してください。")
+    .max(200, "住所は200文字以内で入力してください。"),
+});
 
-const apiClient = new ApiClient(); // :8000まで
-export default function Signup() {
-    const { grobalEmail, setEmail } = useAuth()
-    // const[isLoading, setIsLoading] = useState(false)
-    const[errorMessage, setErrorMessage] = useState('')
-    // const[validationMessage, setValidationMessage] = useState('')
-    // const[isDomainValid, setIsDomainValid] = useState(false)
-    const[inputEmail, setInputEmail] = useState('')
-    const[isButtonDisabled, setIsButtonDisabled] = useState(true)
+// ZodスキーマからTypeScriptの型を推論
+type SignupFormInputs = z.infer<typeof signupSchema>;
 
-    const router = useRouter()
+export default function SignupPage() {
+  const router = useRouter();
+  const [apiError, setApiError] = useState<string | null>(null);
 
-    // 全てのページでユーザーの検証に使うメールアドレスのセット
-    useEffect(() => {
-        if(grobalEmail) {
-            console.log(`email changed ${grobalEmail}`)
-        } else {
-            console.log('email reset')
-        }
-    }, [grobalEmail]);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<SignupFormInputs>({
+    resolver: zodResolver(signupSchema),
+    defaultValues: {
+      password: "",
+      lastName: "",
+      firstName: "",
+      gender: "other",
+      birthday: "",
+      phoneNumber: "",
+      address: "",
+    },
+  });
 
-    // ドメインチェック
-    // useEffect(() => {
-    //     const domain = inputEmail.split('@')[1];
-    //     if (domain) {
-    //         validateDomainForEmail(domain)
-    //     } else {
-    //         setValidationMessage('')
-    //         setIsDomainValid(false)
-    //     }
-    // }, [grobalEmail])
+  const onSubmit: SubmitHandler<SignupFormInputs> = async (data) => {
+    setApiError(null);
 
-    // ユーザーのタイプ毎にバリデーションチェックをする関数
-    const realTimeValidation = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newestEmail = e.target.value;
-        setInputEmail(newestEmail)
-        setEmail(newestEmail)
-        const validationResult = Validator.validateEmail(newestEmail);
-        if(validationResult.isValid) {
-            setErrorMessage('')
-            setIsButtonDisabled(false)
-        } else {
-            setErrorMessage(validationResult.message)
-            setIsButtonDisabled(true)
-            console.log(isButtonDisabled)
-        }
+    try {
+      const response = await fetch("/api/proxy", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...data,
+          // API Routeに転送先エンドポイントを伝える
+          endPoint: "/api/users/auth/signup/",
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "登録に失敗しました。");
+      }
+
+      alert("登録が完了しました。");
+      // ログインページなどにリダイレクト
+      router.push("/login");
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "不明なエラーが発生しました。";
+      setApiError(errorMessage);
+      console.error("Signup failed:", error);
     }
+  };
 
-    // pythonサーバーにサインアップ要求をかける関数
-    const signup = async() => {
-        setIsButtonDisabled(true)
-        try {
-            const response = await apiClient.request(`/users/auth/send-otp-signup/`, 'POST', {'emailAddress':grobalEmail});
-            if (response.ok) {
-                console.log(response)
-                router.push('/register/standby_page')
-            }
-        } catch(error) {
-            console.log(error)
-        }
-    }
-        return (
-            <Box
-                sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    width: '100vw',
-                    height: '100svh',
-                    backgroundColor: '#000',
-                }}
-                component={'form'}
-                onSubmit={(e) => {
-                    e.preventDefault(); // フォームのデフォルトの送信を防ぐ
-                    // {signup}
-                }}
-            >
-                <Typography
-                    sx={{
-                        fontWeight: 'bold',
-                        color: 'white',
-                        fontSize: '2rem',
-                        marginBottom: '20px',
-                    }}
-                >
-                    アカウント作成
-                </Typography>
-
-                {/* メールアドレス */}
-                <CustomTextField
-                    label="e-mail"
-                    placeholder=""
-                    value = {inputEmail}
-                    onChange={realTimeValidation}
-                />
-
-                <Typography
-                    id="alertMessage"
-                    sx={{
-                        color: 'red',
-                        height: '20px',
-                        margin: '5px',
-                    }}
-                >
-                    {errorMessage}
-                </Typography>
-
-                {/* 会員登録画面へのボタン */}
-                <Button
-                    variant="contained"
-                    sx={{
-                        width: '200px',
-                    }}
-                    type="submit"
-                    disabled={isButtonDisabled}
-                    onClick={() => {
-                        signup();
-                    }}
-                >
-                    メンバー登録
-                </Button>
-                {/* {isLoading && <div>Loading...</div>}  ローカルなローディング表示 
-                {data && <pre>{JSON.stringify(data, null, 2)}</pre>} */}
-            </Box>
-        );
+  return (
+    <Container component="main" maxWidth="sm">
+      <Paper
+        elevation={3}
+        sx={{
+          marginTop: 8,
+          marginBottom: 8,
+          padding: { xs: 2, sm: 4 },
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
+        <Typography component="h1" variant="h5">
+          新規アカウント登録
+        </Typography>
+        <Box
+          component="form"
+          onSubmit={handleSubmit(onSubmit)}
+          noValidate
+          sx={{ mt: 3, width: "100%" }}
+        >
+          <Grid container spacing={2}>
+            {apiError && (
+              <Grid>
+                <Alert severity="error">{apiError}</Alert>
+              </Grid>
+            )}
+            <Grid>
+              <TextField
+                {...register("password")}
+                required
+                fullWidth
+                name="password"
+                label="パスワード"
+                type="password"
+                id="password"
+                autoComplete="new-password"
+                error={!!errors.password}
+                helperText={errors.password?.message}
+              />
+            </Grid>
+            <Grid>
+              <TextField
+                {...register("lastName")}
+                required
+                fullWidth
+                id="lastName"
+                label="姓"
+                name="lastName"
+                autoComplete="family-name"
+                error={!!errors.lastName}
+                helperText={errors.lastName?.message}
+              />
+            </Grid>
+            <Grid>
+              <TextField
+                {...register("firstName")}
+                required
+                fullWidth
+                id="firstName"
+                label="名"
+                name="firstName"
+                autoComplete="given-name"
+                error={!!errors.firstName}
+                helperText={errors.firstName?.message}
+              />
+            </Grid>
+            <Grid>
+              <TextField
+                {...register("gender")}
+                required
+                fullWidth
+                select
+                id="gender"
+                name="gender"
+                label="性別"
+                defaultValue=""
+                error={!!errors.gender}
+                helperText={errors.gender?.message}
+              >
+                <MenuItem value="male">男性</MenuItem>
+                <MenuItem value="female">女性</MenuItem>
+                <MenuItem value="other">その他</MenuItem>
+              </TextField>
+            </Grid>
+            <Grid>
+              <TextField
+                {...register("birthday")}
+                required
+                fullWidth
+                id="birthday"
+                name="birthday"
+                label="誕生日"
+                type="date"
+                InputLabelProps={{ shrink: true }}
+                error={!!errors.birthday}
+                helperText={errors.birthday?.message}
+              />
+            </Grid>
+            <Grid>
+              <TextField
+                {...register("phoneNumber")}
+                required
+                fullWidth
+                id="phoneNumber"
+                name="phoneNumber"
+                label="携帯電話番号"
+                type="tel"
+                autoComplete="tel"
+                placeholder="090-1234-5678"
+                error={!!errors.phoneNumber}
+                helperText={errors.phoneNumber?.message}
+              />
+            </Grid>
+            <Grid>
+              <TextField
+                {...register("address")}
+                required
+                fullWidth
+                id="address"
+                name="address"
+                label="住所"
+                autoComplete="street-address"
+                error={!!errors.address}
+                helperText={errors.address?.message}
+              />
+            </Grid>
+          </Grid>
+          <LoadingButton
+            type="submit"
+            fullWidth
+            variant="contained"
+            loading={isSubmitting}
+            sx={{ mt: 3, mb: 2 }}
+          >
+            登録する
+          </LoadingButton>
+        </Box>
+      </Paper>
+    </Container>
+  );
 }
+

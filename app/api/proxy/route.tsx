@@ -1,40 +1,53 @@
 import { NextRequest, NextResponse } from 'next/server';
-// import { getCookie } from '@/lib/utils/getCookie';
+import { getCookie } from '@/lib/utils/getCookie';
 
 // -----POST-----
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
+    console.log('Req:',req);
     console.log('Req:', req.method, req.url);
     const { endPoint, ...rest } = body;
-
-    console.log('Received request:', rest);
+    console.log('rest:', rest);
+    console.log('endPoint:', endPoint);
 
     // DjangoのAPIエンドポイント
     const url = `http://127.0.0.1:8000/api${endPoint}`;
-
-    // cookie取得
-    // const cookie = await getCookie();
+    console.log('Django API URL:', url);
+    const cookie = await getCookie('all'); // Cookieを取得
+    console.log('Cookie:', cookie);
+    const csrfToken = await getCookie('csrftoken'); // CSRFトークンを取得
+    console.log('CSRF Token:', csrfToken);
+    const sessionId = await getCookie('sessionid'); // セッションIDを取得
 
     const djangoRes = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        // 'Cookie': cookie,
+        'Cookie': cookie,
+        'sessionid': sessionId, // セッションIDをヘッダーに追加
+        'X-CSRFToken': csrfToken,
       },
-      body: JSON.stringify(rest),
-      credentials: 'include', // Cookieを横持ちしたいなら
+      body: JSON.stringify(rest), // エンドポイントとそれ以外のデータをDjangoに渡す
     });
 
     // レスポンスのボディとヘッダーを取得
-    const data = await djangoRes.json();
-    console.log('Django response:', data);
-    const setCookie = djangoRes.headers.get('set-cookie');
-
+    if (djangoRes.status === 204) {
+      // No Content の場合はボディがないので、そのまま空の成功レスポンスを返す
+      return new NextResponse(null, { status: 204 });
+    }
+    const data = await djangoRes.status === 204 ? {}: djangoRes.json();
     const response = NextResponse.json(data, { status: djangoRes.status });
+    console.log('Django response:', response);
+    if (djangoRes.ok) {
+      const setCookie = djangoRes.headers.get('set-cookie');
+      console.log('Set-Cookie header:', setCookie);
 
-    if (setCookie) {
-      response.headers.set('set-cookie', setCookie);
+      if (setCookie) {
+        response.headers.set('set-cookie', setCookie);
+      }
+    } else {
+      console.error('Django error response:', data);
     }
 
     return response;
@@ -48,46 +61,50 @@ export async function POST(req: NextRequest) {
 // -----GET-----
 // GET リクエストを処理する関数 (例: データを取得する場合)
 export async function GET(req: NextRequest) {
+  console.log('get request run');
   try {
-    console.log('--- GET /api/proxy received request from client/server ---');
+    // デフォルトのヘッダーを設定
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      'cookie': await getCookie('all'),
+      'X-CSRFToken': await getCookie('csrftoken'),
+    };
+
+    // 1. クエリパラメータの`URLSearchParams`オブジェクトを取得
+    const searchParams = req.nextUrl.searchParams;
+
+    // 2. 'endpoint'という名前のパラメータの値を取得し、デコードする
+    const endpointParam = searchParams.get('endPoint');
+    if (!endpointParam) {
+      return NextResponse.json({ error: "Query parameter 'endpoint' is required." }, { status: 400 });
+    }
+    const endPointPath = decodeURIComponent(endpointParam); // %2F などを / に戻す
+
+    // 3. Djangoに渡すための、'endpoint'以外のクエリパラメータを再構築する
+    const forwardedParams = new URLSearchParams();
+    for (const [key, value] of searchParams.entries()) {
+      if (key !== 'endpoint') {
+        forwardedParams.append(key, value);
+      }
+    }
+    const queryString = forwardedParams.toString();
+
+    // 4. 正しいURLを組み立てる
+    const djangoBaseUrl = 'http://127.0.0.1:8000/api'; // ここに /api は含めない
+    const finalUrl = new URL(djangoBaseUrl + endPointPath); // ベースURLとデコードしたパスを結合
+    console.log('Final URL:', finalUrl.href);
     
-    // クエリパラメータを取得
-    // NextRequestからURLSearchParamsを直接取得できる
-    const searchParams = req.nextUrl.searchParams; 
-    const endPoint = searchParams.get('endPoint');
-    const param1 = searchParams.get('param1'); // 例: 他のクエリパラメータ
-
-    console.log('Received endPoint from query:', endPoint);
-    console.log('Received param1 from query:', param1);
-
-    if (!endPoint || typeof endPoint !== 'string' || !endPoint.startsWith('/')) {
-      console.error('Validation Error (GET): Missing or invalid "endPoint" in query parameters.');
-      return NextResponse.json(
-        { message: 'Query parameter "endPoint" is required and must start with /.' },
-        { status: 400 }
-      );
+    // 5. 転送するクエリがあればセットする
+    if (queryString) {
+      finalUrl.search = queryString;
     }
 
-    const djangoBaseUrl = 'http://127.0.0.1:8000/api'; 
-    const url = `${djangoBaseUrl}${endPoint}`; 
-    console.log('-----request------', req);
-
-    const cookie = req.headers.get('cookie') || ''; // リクエストヘッダーからCookieを取得
-    if (!cookie) {
-      console.warn('No cookie found in request headers (GET).');
-    } else {
-      console.log('Cookie found in request headers (GET):', cookie);
-    }
-    console.log('cookie (GET):', cookie);
+    console.log('Forwarding request to:', finalUrl.href);
 
     // GET リクエストなので body は不要
-    const djangoRes = await fetch(url, {
+    const djangoRes = await fetch(finalUrl.href, {
       method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        cookie: cookie,
-      },
-      // credentials: 'include', // サーバーサイドでは通常不要
+      headers: headers,
     });
 
     console.log('Django response status (GET):', djangoRes.status);
@@ -101,7 +118,6 @@ export async function GET(req: NextRequest) {
     }
     console.log('Django response data (GET):', data);
 
-    // GETリクエストでSet-Cookieを受け取ることは稀だが、もしあれば処理
     const setCookie = djangoRes.headers.get('set-cookie');
     const response = NextResponse.json(data, { status: djangoRes.status });
     if (setCookie) {

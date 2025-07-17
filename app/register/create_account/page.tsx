@@ -6,12 +6,10 @@ import { Box, Button, Typography } from '@mui/material';
 import { useState, useEffect } from 'react';
 import{ useRouter } from 'next/navigation';
 
-import { ApiClient } from '@/lib/api/apiClient'; // APIクライアントをインポート
 import { Validator } from '@/lib/utils/validator'; // バリデーションライブラリをインポート
 import { useAuth } from '@/app/contexts/AuthContexts';
 // import { validateDomainForEmail } from '@/lib/utils/validateDomain';
 
-const apiClient = new ApiClient(); // :8000まで
 export default function Signup() {
     const { grobalEmail, setEmail } = useAuth()
     // const[isLoading, setIsLoading] = useState(false)
@@ -59,19 +57,54 @@ export default function Signup() {
         }
     }
 
-    // pythonサーバーにサインアップ要求をかける関数
-    const signup = async() => {
-        setIsButtonDisabled(true)
-        try {
-            const response = await apiClient.request(`/users/auth/send-otp-signup/`, 'POST', {'emailAddress':grobalEmail});
-            if (response.ok) {
-                console.log(response)
-                router.push('/register/standby_page')
+        // pythonサーバーにサインアップ要求をかける関数
+        const signup = async() => {
+            setIsButtonDisabled(true);
+            // 1. メールアドレスの存在チェック
+            try {
+                // GET /api/proxy 経由で Django のメールアドレス存在チェック API を呼び出す
+                const checkEmailResponse = await fetch(`/api/proxy?endPoint=/users/auth/check-email/&emailAddress=${grobalEmail}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+    
+                if (checkEmailResponse.ok) {
+                    console.log('メールアドレスのチェック成功:', checkEmailResponse);
+    
+                    // 2. OTP メール送信
+                    // POST /api/proxy 経由で Django の OTP 送信 API を呼び出す
+                    const sendOtpResponse = await fetch('/api/proxy', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            endPoint: '/users/auth/send-otp-signup/', // OTP 送信のエンドポイント
+                            emailAddress: grobalEmail, // メールアドレスを渡す
+                        }),
+                    });
+    
+                    if (sendOtpResponse.ok) {
+                        console.log('OTP メール送信成功:', sendOtpResponse);
+                        router.push('/register/standby_page');
+                    } else {
+                        console.error('OTP メール送信失敗:', sendOtpResponse);
+                        setErrorMessage('メール送信に失敗しました。もう一度お試しください。');
+                    }
+                } else {
+                    console.error('メールアドレスのチェック失敗:', checkEmailResponse);
+                    setErrorMessage('メールアドレスのチェックに失敗しました。');
+                }
+            } catch (error) {
+                console.error('予期せぬエラー:', error);
+                setErrorMessage('予期せぬエラーが発生しました。');
+            } finally {
+                setIsButtonDisabled(false); // 処理が終わったらボタンを再び有効にする
             }
-        } catch(error) {
-            console.log(error)
-        }
-    }
+        };
+    
         return (
             <Box
                 sx={{
@@ -99,7 +132,7 @@ export default function Signup() {
                 >
                     アカウント作成
                 </Typography>
-
+    
                 {/* メールアドレス */}
                 <CustomTextField
                     label="e-mail"
@@ -107,7 +140,7 @@ export default function Signup() {
                     value = {inputEmail}
                     onChange={realTimeValidation}
                 />
-
+    
                 <Typography
                     id="alertMessage"
                     sx={{
@@ -118,7 +151,7 @@ export default function Signup() {
                 >
                     {errorMessage}
                 </Typography>
-
+    
                 {/* 会員登録画面へのボタン */}
                 <Button
                     variant="contained"
@@ -137,4 +170,4 @@ export default function Signup() {
                 {data && <pre>{JSON.stringify(data, null, 2)}</pre>} */}
             </Box>
         );
-}
+    }

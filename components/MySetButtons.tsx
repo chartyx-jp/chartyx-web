@@ -21,7 +21,9 @@ export default function MySetButtons({ id, name, active, onClick }: props) {
         <Button
             variant={active ? 'contained' : 'outlined'}
             sx={{
-                color: active ? '#fff' : '#aaa',
+                backgroundColor: active ? '#73C4BF' : 'transparent',
+                color: active ? '#fff' : '#12232D',
+                borderColor: active ? 'transparent' : '#12232D',
                 width: 'auto',
                 height: '50px',
                 borderRadius: '10px',

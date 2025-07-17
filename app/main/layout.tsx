@@ -20,13 +20,14 @@ export default async function MainLayout({
     children: React.ReactNode;
 }>) {
     // const apiClient = new ApiClient();
-    const cookie = await getCookie();
+    const cookie = await getCookie('all');
     console.log('cookie', cookie);
-    const response = await fetch('http://127.0.0.1:8000/api/users/auth/user-info/',{
+    const response = await fetch('http://127.0.0.1:3000/api/proxy?endPoint=/users/auth/user-info/',{
+        cache: 'no-store',
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
-            cookie: cookie, // Cookieをヘッダーに追加
+            cookie: cookie,
         },
     })
     console.log(response);
