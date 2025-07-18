@@ -16,7 +16,7 @@ export default async function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="en">
+        <html lang="en" style={{ scrollbarWidth: 'thin', scrollbarColor: '#424242 transparent' }}>
             <body
                 style={{
                     margin: 0,
@@ -27,6 +27,23 @@ export default async function RootLayout({
                     overflowX: 'hidden',
                 }}
             >
+                <style dangerouslySetInnerHTML={{
+                    __html: `
+                        ::-webkit-scrollbar {
+                            width: 8px;
+                        }
+                        ::-webkit-scrollbar-track {
+                            background: transparent;
+                        }
+                        ::-webkit-scrollbar-thumb {
+                            background: #424242;
+                            border-radius: 4px;
+                        }
+                        ::-webkit-scrollbar-thumb:hover {
+                            background: #616161;
+                        }
+                    `
+                }} />
                 <AppRouterCacheProvider>
                     <CssBaseline />
                     <ThemeProvider theme={theme}>

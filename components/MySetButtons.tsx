@@ -1,6 +1,5 @@
 import { Button, Typography } from '@mui/material';
 
-
 type props = {
     id: string
     name: string;
@@ -9,28 +8,21 @@ type props = {
 };
 
 export default function MySetButtons({ id, name, active, onClick }: props) {
-    // const [isActive, setActive] = useState(active);
-
-    // const switchActive = () => {
-    //     setActive(active => !active);
-    //     active = isActive
-    //     console.log(active, isActive);
-    // };
-
     return (
         <Button
             variant={active ? 'contained' : 'outlined'}
             sx={{
                 backgroundColor: active ? '#73C4BF' : 'transparent',
-                color: active ? '#fff' : '#12232D',
-                borderColor: active ? 'transparent' : '#12232D',
+                color: '#FFFFFF', // 白に変更
+                borderColor: active ? 'transparent' : '#444444', // より見やすいボーダー色に変更
                 width: 'auto',
                 height: '50px',
                 borderRadius: '10px',
                 margin: '10px',
                 '&:hover': {
-                    borderColor: '#888',
-                    color: '#fff',
+                    borderColor: '#73C4BF', // ホバー時のボーダーをアクセントカラーに
+                    color: '#FFFFFF',
+                    backgroundColor: active ? '#4A9B96' : 'rgba(115, 196, 191, 0.1)', // ホバー時の背景
                 },
             }}
             onClick={() => onClick(id)}
@@ -43,4 +35,5 @@ export default function MySetButtons({ id, name, active, onClick }: props) {
                 {name}
             </Typography>
         </Button>
-    );}
+    );
+}

@@ -10,7 +10,7 @@ import {
 import { subMonths, format, parseISO } from 'date-fns';
 import { useState, useEffect, useRef } from 'react';
 import MySetButtons from '@/components/MySetButtons';
-import Header from '@/components/Header';
+import { useTheme } from '@mui/material/styles';
 
 // --- 型定義 ---
 
@@ -50,6 +50,8 @@ type ChartDataItem = {
 // --- コンポーネント ---
 
 export default function Graph() {
+    const theme = useTheme();
+
     // --- チャートやDOM要素のためのRef ---
     const chartRef = useRef<HTMLDivElement>(null);
     const miniChartRef = useRef<HTMLDivElement>(null);
@@ -257,71 +259,113 @@ export default function Graph() {
 
     // --- JSXレンダリング ---
     return (
-        <>
-            <Box sx={{ marginTop: '60px', width: '100vw', position: 'relative' }}>
-                <Header></Header>
-                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100vw', height: '100%', backgroundColor: '#000', padding: '0 10px' }}>
-                    
-                    {/* 企業情報ボックス */}
-                    <Box sx={{
-                        width: { xs: '95%', sm: '85%', md: '70%', lg: '1000px', xl: '1200px' },
-                        height: '150px', marginTop: '20px', border: '1px solid #ddd', borderRadius: '5px', padding: '10px'
+        <Box sx={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            alignItems: 'center', 
+            width: '100%',
+            backgroundColor: theme.palette.background.default,
+            padding: '0 10px',
+            boxSizing: 'border-box',
+            minHeight: '100vh', // 高さを確保
+        }}>
+            
+            {/* 企業情報ボックス */}
+            <Box sx={{
+                width: { xs: '95%', sm: '85%', md: '70%', lg: '1000px', xl: '1200px' },
+                maxWidth: '100%',
+                height: '150px', 
+                marginTop: '20px', 
+                border: `1px solid ${theme.palette.divider}`, 
+                borderRadius: 2, 
+                padding: '16px',
+                backgroundColor: theme.palette.background.paper,
+                boxSizing: 'border-box',
+            }}>
+                <Box sx={{ height: '50%', display: 'flex', alignItems: 'center' }}>
+                    <Typography variant="h5" sx={{ 
+                        color: theme.palette.text.primary, 
+                        marginRight: '15px',
+                        fontWeight: 600
                     }}>
-                        <Box sx={{ height: '50%', display: 'flex', alignItems: 'center' }}>
-                            <Typography variant="h5" sx={{ color: '#fff', marginRight: '15px' }}>
-                                {stockCode}
-                            </Typography>
-                            <Typography variant="h6" sx={{ color: '#fff' }}>
-                                XXX株式会社
-                            </Typography>
-                        </Box>
-                        <Typography variant="h4" sx={{ color: '#fff', flexGrow: 1, textAlign: 'left' }}>
-                            {chartData.length > 0 ? `${chartData[chartData.length - 1].close.toLocaleString()}円` : 'Loading...'}
-                        </Typography>
-                    </Box>
-
-                    {/* メインチャート */}
-                    <Box ref={chartRef} sx={{
-                        marginTop: '20px',
-                        width: { xs: '95%', sm: '85%', md: '70%', lg: '1000px', xl: '1200px' },
-                        aspectRatio: '16/9',
-                        position: 'relative',
-                        border: '1px solid #ddd'
+                        {stockCode}
+                    </Typography>
+                    <Typography variant="h6" sx={{ 
+                        color: theme.palette.text.secondary 
                     }}>
-                        <Box ref={tooltipRef} sx={{
-                            position: 'absolute', display: 'none', padding: '8px',
-                            background: 'rgba(0, 0, 0, 0.8)', color: '#fff', border: '1px solid #555',
-                            borderRadius: '4px', fontSize: '14px', zIndex: 1000,
-                            pointerEvents: 'none', whiteSpace: 'nowrap',
-                        }} />
-                    </Box>
-
-                    {/* ミニチャート（出来高） */}
-                    <Box ref={miniChartRef} sx={{
-                        width: { xs: '95%', sm: '85%', md: '70%', lg: '1000px', xl: '1200px' },
-                        height: '100px', border: '1px solid #ddd', borderTop: 'none'
-                    }} />
-
-                    {/* 操作ボタン */}
-                    <Box sx={{
-                        display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '10px', marginTop: '20px',
-                        width: { xs: '95%', sm: '85%', md: '70%', lg: '1000px', xl: '1200px' },
-                    }}>
-                        <MySetButtons id="candle" name="ローソク" active={activeButtons.candle} onClick={handleButtonClick} />
-                        <MySetButtons id="bar" name="出来高" active={activeButtons.bar} onClick={handleButtonClick} />
-                        <MySetButtons id="line" name="折れ線" active={activeButtons.line} onClick={handleButtonClick} />
-                        <MySetButtons id="A" name="移動平均線" active={activeButtons.A} onClick={handleButtonClick} />
-                        <MySetButtons id="B" name="ボリンジャーバンド" active={activeButtons.B} onClick={handleButtonClick} />
-                        <MySetButtons id="C" name="C" active={activeButtons.C} onClick={handleButtonClick} />
-                        <MySetButtons id="D" name="D" active={activeButtons.D} onClick={handleButtonClick} />
-                        <MySetButtons id="E" name="E" active={activeButtons.E} onClick={handleButtonClick} />
-                        <MySetButtons id="F" name="F" active={activeButtons.F} onClick={handleButtonClick} />
-                        <MySetButtons id="G" name="G" active={activeButtons.G} onClick={handleButtonClick} />
-                        <MySetButtons id="H" name="H" active={activeButtons.H} onClick={handleButtonClick} />
-                        <MySetButtons id="I" name="I" active={activeButtons.I} onClick={handleButtonClick} />
-                    </Box>
+                        XXX株式会社
+                    </Typography>
                 </Box>
+                <Typography variant="h4" sx={{ 
+                    color: theme.palette.primary.main,
+                    fontWeight: 600,
+                    textAlign: 'left'
+                }}>
+                    {chartData.length > 0 ? `${chartData[chartData.length - 1].close.toLocaleString()}円` : 'Loading...'}
+                </Typography>
             </Box>
-        </>
+            
+            {/* メインチャート */}
+            <Box ref={chartRef} sx={{
+                marginTop: '20px',
+                width: { xs: '95%', sm: '85%', md: '70%', lg: '1000px', xl: '1200px' },
+                maxWidth: '100%',
+                aspectRatio: '16/9',
+                position: 'relative',
+                border: `1px solid ${theme.palette.divider}`,
+                overflow: 'hidden',
+                boxSizing: 'border-box',
+            }}>
+                <Box ref={tooltipRef} sx={{
+                    position: 'absolute', 
+                    display: 'none', 
+                    padding: '8px',
+                    background: theme.palette.background.paper, 
+                    color: theme.palette.text.primary, 
+                    border: `1px solid ${theme.palette.divider}`,
+                    borderRadius: 1, 
+                    fontSize: '14px', 
+                    zIndex: 1000,
+                    pointerEvents: 'none', 
+                    whiteSpace: 'nowrap',
+                    boxShadow: 3,
+                }} />
+            </Box>
+
+            {/* ミニチャート（出来高） */}
+            <Box ref={miniChartRef} sx={{
+                width: { xs: '95%', sm: '85%', md: '70%', lg: '1000px', xl: '1200px' },
+                maxWidth: '100%',
+                height: '100px', 
+                border: `1px solid ${theme.palette.divider}`, 
+                borderTop: 'none',
+                overflow: 'hidden',
+                boxSizing: 'border-box',
+            }} />
+
+            {/* 操作ボタン */}
+            <Box sx={{
+                display: 'flex', 
+                flexWrap: 'wrap', 
+                justifyContent: 'center', 
+                gap: '10px', 
+                marginTop: '20px',
+                marginBottom: '20px',
+                width: { xs: '95%', sm: '85%', md: '70%', lg: '1000px', xl: '1200px' },
+            }}>
+                <MySetButtons id="candle" name="ローソク" active={activeButtons.candle} onClick={handleButtonClick} />
+                <MySetButtons id="bar" name="出来高" active={activeButtons.bar} onClick={handleButtonClick} />
+                <MySetButtons id="line" name="折れ線" active={activeButtons.line} onClick={handleButtonClick} />
+                <MySetButtons id="A" name="移動平均線" active={activeButtons.A} onClick={handleButtonClick} />
+                <MySetButtons id="B" name="ボリンジャーバンド" active={activeButtons.B} onClick={handleButtonClick} />
+                <MySetButtons id="C" name="C" active={activeButtons.C} onClick={handleButtonClick} />
+                <MySetButtons id="D" name="D" active={activeButtons.D} onClick={handleButtonClick} />
+                <MySetButtons id="E" name="E" active={activeButtons.E} onClick={handleButtonClick} />
+                <MySetButtons id="F" name="F" active={activeButtons.F} onClick={handleButtonClick} />
+                <MySetButtons id="G" name="G" active={activeButtons.G} onClick={handleButtonClick} />
+                <MySetButtons id="H" name="H" active={activeButtons.H} onClick={handleButtonClick} />
+                <MySetButtons id="I" name="I" active={activeButtons.I} onClick={handleButtonClick} />
+            </Box>
+        </Box>
     );
 }

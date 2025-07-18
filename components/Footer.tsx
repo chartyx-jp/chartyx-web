@@ -1,18 +1,33 @@
-import { Box, Typography } from '@mui/material';
+"use client";
+
+import { Box, Typography, Container } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 
 export default function Footer() {
+    const theme = useTheme();
+    
     return (
         <Box
+            component="footer"
             sx={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '100%',
-                height: '80px',
-                borderTop: 'solid 1px #ccc',
+                backgroundColor: theme.palette.background.paper,
+                borderTop: `1px solid ${theme.palette.divider}`,
+                py: 3,
+                mt: 'auto',
             }}
         >
-            <Typography>Footer!</Typography>
+            <Container maxWidth="lg">
+                <Typography 
+                    variant="body2" 
+                    color="text.secondary" 
+                    align="center"
+                    sx={{ 
+                        color: theme.palette.text.secondary 
+                    }}
+                >
+                    © 2024 Chartyx. All rights reserved.
+                </Typography>
+            </Container>
         </Box>
     );
 }
