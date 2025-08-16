@@ -2,6 +2,7 @@
 
 import { Box } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import Header from '@/components/Header';
 import { UserInfo } from './layout';
@@ -13,11 +14,15 @@ type MainLayoutClientProps = {
 
 export default function MainLayoutClient({ children, userInfo }: MainLayoutClientProps) {
     const theme = useTheme();
+    const pathname = usePathname();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const handleMenuToggle = (isOpen: boolean) => {
         setIsMenuOpen(isOpen);
     };
+    
+    // プラン画面ではハンバーガーメニューを非表示
+    const isPlansPage = pathname === '/main/plans';
     
     return (
         <Box sx={{ display: 'flex', minHeight: '100vh' }}>
@@ -26,6 +31,7 @@ export default function MainLayoutClient({ children, userInfo }: MainLayoutClien
                 userInfo={userInfo} 
                 onMenuToggle={handleMenuToggle}
                 isMenuOpen={isMenuOpen}
+                showHamburgerMenu={!isPlansPage}
             />
             
             {/* メインコンテンツ */}
@@ -34,15 +40,15 @@ export default function MainLayoutClient({ children, userInfo }: MainLayoutClien
                 sx={{ 
                     flexGrow: 1,
                     marginTop: '60px', 
-                    marginLeft: isMenuOpen ? '360px' : '0px',
-                    width: isMenuOpen ? 'calc(100vw - 360px)' : '100vw',
+                    marginLeft: !isPlansPage && isMenuOpen ? '360px' : '0px',
+                    width: !isPlansPage && isMenuOpen ? 'calc(100vw - 360px)' : '100vw',
                     backgroundColor: theme.palette.background.default,
                     minHeight: 'calc(100vh - 60px)',
-                    transition: theme.transitions.create(['margin-left', 'width'], {
+                    transition: !isPlansPage ? theme.transitions.create(['margin-left', 'width'], {
                         easing: theme.transitions.easing.sharp,
-                        duration: theme.transitions.duration.enteringScreen,
-                    }),
-                    overflow: 'auto', // スクロール可能にする
+                        duration: theme.transitions.duration.leavingScreen,
+                    }) : 'none',
+                    overflow: 'auto',
                     // カスタムスクロールバー
                     '&::-webkit-scrollbar': {
                         width: '8px',

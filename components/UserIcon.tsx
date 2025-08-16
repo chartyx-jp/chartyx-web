@@ -49,6 +49,11 @@ const AccountInfoContent = ({
         }
     };
 
+    const handleSettingsClick = () => {
+        onClose();
+        router.push('/main/settings');
+    };
+
     return (
         <Paper
             elevation={0}
@@ -100,10 +105,13 @@ const AccountInfoContent = ({
                     gap: 1,
                 }}
             >
-                <Button variant="outlined" sx={{ width: '100%' }}>
+                <Button variant="outlined" sx={{ width: '100%' }} onClick={() => {
+                    onClose();
+                    router.push('/main/plans');
+                }}>
                     プランをアップグレード
                 </Button>
-                <Button variant="outlined" sx={{ width: '100%' }}>
+                <Button variant="outlined" sx={{ width: '100%' }} onClick={handleSettingsClick}>
                     設定
                 </Button>
                 <Button variant="contained" color="primary" sx={{ width: '100%' }} onClick={signout}>

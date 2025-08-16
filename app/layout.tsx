@@ -23,7 +23,7 @@ export default async function RootLayout({
                     padding: 0,
                     backgroundColor: '#000',
                     width: '100vw',
-                    minHeight: '100svh',
+                    minHeight: '100vh', // 100svhから100vhに変更
                     overflowX: 'hidden',
                 }}
             >
@@ -48,9 +48,13 @@ export default async function RootLayout({
                     <CssBaseline />
                     <ThemeProvider theme={theme}>
                         <AuthProvider>
-                            {children}
+                            <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+                                <div style={{ flex: 1 }}>
+                                    {children}
+                                </div>
+                                <Footer />
+                            </div>
                         </AuthProvider>
-                        <Footer></Footer>
                     </ThemeProvider>
                 </AppRouterCacheProvider>
             </body>

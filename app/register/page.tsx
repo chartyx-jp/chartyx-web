@@ -145,6 +145,15 @@ export default function Home() {
             >
                 アカウントをお持ちでない方はこちら
             </Link>
+            <Link href="/main/plans"
+                style={{
+                    textDecoration: 'none',
+                    color: 'white',
+                    margin: '20px',
+                }}
+            >
+                プランを選択
+            </Link>
         
         </Box>
     );
