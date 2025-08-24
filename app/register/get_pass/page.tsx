@@ -55,18 +55,31 @@ export default function PasswordPage() {
         }),
       });
 
+      console.log('Password setting response status:', response.status);
+      
       // レスポンスの処理を改善
       if (!response.ok) {
         let errorMessage = "パスワードの設定に失敗しました。";
         try {
           const errorData = await response.json();
-          errorMessage = errorData.message || errorMessage;
+          console.error('Error response data:', errorData);
+          errorMessage = errorData.message || errorData.error || errorMessage;
         } catch (e) {
           console.error("Error parsing response:", e);
         }
         throw new Error(errorMessage);
       }
 
+      // 成功レスポンスの確認
+      try {
+        const responseData = await response.json();
+        console.log('Success response data:', responseData);
+      } catch {
+        console.log('Response may not contain JSON data, but status is ok');
+      }
+
+      console.log('Password setting successful, redirecting to plans page...');
+      
       // 成功したら plans ページにリダイレクト
       router.push("/register/plans");
     } catch (error) {

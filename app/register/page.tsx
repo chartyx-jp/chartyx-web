@@ -100,10 +100,11 @@ export default function Home() {
                 }}
             />
 
-            {/* メールアドレス */}
+            {/* パスワード */}
             <CustomTextField
                 label="password"
                 placeholder=""
+                type="password"
                 onChange={(e) => {
                     setPassword(e.target.value);
                 }}
